@@ -17,6 +17,10 @@ services:
     networks:
       - app
 
+    environment:
+      PHP_IDE_CONFIG: "serverName=php-service"
+      APP_NAME: ${APP_NAME}
+
   nginx:
     image: nginx:1.29-alpine
 
