@@ -68,16 +68,20 @@
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
         "lint": [
-            "vendor/bin/pint",
-            "vendor/bin/phpstan analyse"
+            "@pint",
+            "@stan"
         ],
 
-        "fix": [
-            "vendor/bin/pint"
+        "pint-test": [
+            "vendor/bin/pint --test"
         ],
 
         "stan": [
             "vendor/bin/phpstan analyse"
+        ],
+
+        "pint": [
+            "vendor/bin/pint"
         ]
     },
     "extra": {
