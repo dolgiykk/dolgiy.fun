@@ -33,6 +33,7 @@ jobs:
 
   backend:
     name: Backend Quality
+    timeout-minutes: 10
 
     runs-on: ubuntu-latest
 
@@ -43,7 +44,7 @@ jobs:
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
 
       - name: Setup PHP
@@ -61,7 +62,7 @@ jobs:
 
 
       - name: Cache Composer packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
@@ -92,6 +93,7 @@ jobs:
 
   frontend:
     name: Frontend Quality
+    timeout-minutes: 10
 
     runs-on: ubuntu-latest
 
@@ -103,11 +105,11 @@ jobs:
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: npm
