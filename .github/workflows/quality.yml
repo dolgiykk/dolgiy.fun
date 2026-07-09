@@ -5,11 +5,21 @@ on:
     branches:
       - master
       - develop
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "docker-compose.yml"
+      - ".github/workflows/quality.yml"
 
   pull_request:
     branches:
       - master
       - develop
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "docker-compose.yml"
+      - ".github/workflows/quality.yml"
 
 permissions:
   contents: read
