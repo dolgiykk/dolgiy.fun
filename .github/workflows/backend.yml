@@ -70,7 +70,7 @@ jobs:
         run: composer validate --strict
 
       - name: Check Code Style (Pint)
-        run: composer pint-testlf
+        run: composer pint-test
 
       - name: Static Analysis (PHPStan)
         run: composer stan
