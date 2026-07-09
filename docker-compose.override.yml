@@ -17,6 +17,12 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  frontend:
+
+    stdin_open: true
+
+    tty: true
+
   nginx:
 
     volumes:

@@ -1,36 +1,28 @@
-name: Backend
+name: Quality
 
 on:
   push:
     branches:
       - master
       - develop
-    paths:
-      - "backend/**"
-      - "frontend/**"
-      - "docker-compose.yml"
-      - ".github/workflows/quality.yml"
 
   pull_request:
     branches:
       - master
       - develop
-    paths:
-      - "backend/**"
-      - "frontend/**"
-      - "docker-compose.yml"
-      - ".github/workflows/quality.yml"
 
 permissions:
   contents: read
 
 concurrency:
-  group: backend-${{ github.ref }}
+  group: quality-${{ github.ref }}
   cancel-in-progress: true
 
+
 jobs:
-  quality:
-    name: Code Quality
+
+  backend:
+    name: Backend Quality
 
     runs-on: ubuntu-latest
 
@@ -39,8 +31,10 @@ jobs:
         working-directory: backend
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -50,9 +44,11 @@ jobs:
           extensions: mbstring, intl, pdo_pgsql, redis
           tools: composer:v2
 
+
       - name: Get Composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
 
       - name: Cache Composer packages
         uses: actions/cache@v4
@@ -62,6 +58,7 @@ jobs:
           restore-keys: |
             composer-${{ runner.os }}-
 
+
       - name: Install dependencies
         run: |
           composer install \
@@ -70,11 +67,54 @@ jobs:
             --no-progress \
             --ansi
 
+
       - name: Validate composer.json
         run: composer validate --strict
 
-      - name: Check Code Style (Pint)
+
+      - name: Pint
         run: composer pint-test
 
-      - name: Static Analysis (PHPStan)
+
+      - name: PHPStan
         run: composer stan
+
+
+  frontend:
+    name: Frontend Quality
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+
+      - name: Install dependencies
+        run: npm ci
+
+
+      - name: Oxlint + ESLint
+        run: npm run lint
+
+
+      - name: Prettier check
+        run: npm run format:check
+
+
+      - name: Build
+        run: npm run build
