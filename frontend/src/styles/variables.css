@@ -1,0 +1,17 @@
+:root {
+    --container-width: 1200px;
+    --container-padding: 24px;
+
+    --header-height: 80px;
+
+    --radius: 18px;
+
+    --color-bg: #fff9f2;
+    --color-text: #2d3047;
+    --color-muted: #6b7280;
+
+    --color-primary: #fb8500;
+    --color-secondary: #ffd166;
+
+    --transition: 0.2s ease;
+}

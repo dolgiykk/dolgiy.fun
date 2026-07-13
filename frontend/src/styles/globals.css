@@ -1,0 +1,43 @@
+@import './reset.css';
+@import './variables.css';
+
+html,
+body,
+#root {
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    overflow-x: hidden;
+    margin: 0;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    position: relative;
+    z-index: 10;
+}
+
+.page {
+    flex: 1;
+
+    display: flex;
+}
+
+.page > .container {
+    padding-block: 64px;
+
+    display: flex;
+    flex-direction: column;
+
+    width: min(900px, calc(100% - 32px));
+}
