@@ -34,6 +34,23 @@
     flex-shrink: 0;
 }
 
+.social-link--skeleton {
+    width: 2.75rem;
+    overflow: hidden;
+    color: transparent;
+    background:
+        linear-gradient(90deg, transparent, rgb(255 255 255 / 12%), transparent),
+        rgb(255 255 255 / 7%);
+    background-size: 220% 100%;
+    animation: social-link-loading 1.2s ease-in-out infinite;
+}
+
+.social-links__status {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
 .social-links--compact .social-link {
     min-height: 2.45rem;
     padding: 0.55rem;
@@ -56,5 +73,11 @@
 
     .social-links--compact .social-link {
         flex: 0 0 auto;
+    }
+}
+
+@keyframes social-link-loading {
+    to {
+        background-position: -220% 0;
     }
 }

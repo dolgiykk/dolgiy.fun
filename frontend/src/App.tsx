@@ -1,11 +1,15 @@
 import './App.css';
 
+import { useEffect, useState } from 'react';
+
+import { fetchPlatforms } from './api/platforms';
 import Header from './components/layout/Header/Header';
 import Hero from './components/sections/Hero/Hero';
 import Footer from './components/layout/Footer/Footer';
 import Container from './components/layout/Container/Container';
 import Background from './components/layout/Background/Background';
 import SocialLinks from './components/ui/SocialLinks/SocialLinks';
+import type { Platform } from './types/platform';
 
 const highlights = [
     {
@@ -26,11 +30,45 @@ const highlights = [
 ];
 
 export default function App() {
+    const [platforms, setPlatforms] = useState<Platform[]>([]);
+    const [isPlatformsLoading, setIsPlatformsLoading] = useState(true);
+    const [platformsError, setPlatformsError] = useState(false);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        fetchPlatforms(controller.signal)
+            .then((items) => {
+                setPlatforms(items);
+                setPlatformsError(false);
+            })
+            .catch((error: unknown) => {
+                if (error instanceof DOMException && error.name === 'AbortError') {
+                    return;
+                }
+
+                setPlatformsError(true);
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) {
+                    setIsPlatformsLoading(false);
+                }
+            });
+
+        return () => {
+            controller.abort();
+        };
+    }, []);
+
     return (
         <>
             <Background />
 
-            <Header />
+            <Header
+                isPlatformsLoading={isPlatformsLoading}
+                platforms={platforms}
+                platformsError={platformsError}
+            />
 
             <main className="page">
                 <Container>
@@ -68,13 +106,21 @@ export default function App() {
                                 <h2>Следите за новыми озвучками там, где удобно</h2>
                             </div>
 
-                            <SocialLinks />
+                            <SocialLinks
+                                hasError={platformsError}
+                                isLoading={isPlatformsLoading}
+                                platforms={platforms}
+                            />
                         </div>
                     </Container>
                 </section>
             </main>
 
-            <Footer />
+            <Footer
+                isPlatformsLoading={isPlatformsLoading}
+                platforms={platforms}
+                platformsError={platformsError}
+            />
         </>
     );
 }

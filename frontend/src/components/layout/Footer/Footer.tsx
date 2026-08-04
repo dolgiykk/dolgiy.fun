@@ -2,8 +2,15 @@ import './Footer.css';
 
 import Container from '../Container/Container';
 import SocialLinks from '../../ui/SocialLinks/SocialLinks';
+import type { Platform } from '../../../types/platform';
 
-export default function Footer() {
+type Props = {
+    isPlatformsLoading: boolean;
+    platforms: Platform[];
+    platformsError: boolean;
+};
+
+export default function Footer({ isPlatformsLoading, platforms, platformsError }: Props) {
     return (
         <footer className="footer">
             <Container>
@@ -16,7 +23,11 @@ export default function Footer() {
                         <p>Любительская озвучка фильмов. Голос, атмосфера и любимое кино.</p>
                     </div>
 
-                    <SocialLinks />
+                    <SocialLinks
+                        hasError={platformsError}
+                        isLoading={isPlatformsLoading}
+                        platforms={platforms}
+                    />
                 </div>
 
                 <div className="footer__bottom">

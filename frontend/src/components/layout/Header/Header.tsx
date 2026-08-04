@@ -2,8 +2,15 @@ import './Header.css';
 
 import Container from '../Container/Container';
 import SocialLinks from '../../ui/SocialLinks/SocialLinks';
+import type { Platform } from '../../../types/platform';
 
-export default function Header() {
+type Props = {
+    isPlatformsLoading: boolean;
+    platforms: Platform[];
+    platformsError: boolean;
+};
+
+export default function Header({ isPlatformsLoading, platforms, platformsError }: Props) {
     return (
         <header className="header">
             <Container>
@@ -25,7 +32,12 @@ export default function Header() {
                     </nav>
 
                     <div className="header__actions">
-                        <SocialLinks compact />
+                        <SocialLinks
+                            compact
+                            hasError={platformsError}
+                            isLoading={isPlatformsLoading}
+                            platforms={platforms}
+                        />
 
                         <a href="#platforms" className="header__cta">
                             К площадкам
