@@ -19,13 +19,13 @@ class PlatformResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'slug' => $this->slug,
-            'name' => $this->name,
-            'url' => $this->url,
-            'icon' => $this->icon,
-            'is_active' => $this->is_active,
-            'sort_order' => $this->sort_order,
+            'id' => data_get($this->resource, 'id'),
+            'slug' => data_get($this->resource, 'slug'),
+            'name' => data_get($this->resource, 'name'),
+            'url' => data_get($this->resource, 'url'),
+            'icon' => data_get($this->resource, 'icon'),
+            'is_active' => data_get($this->resource, 'is_active'),
+            'sort_order' => data_get($this->resource, 'sort_order'),
         ];
     }
 }
