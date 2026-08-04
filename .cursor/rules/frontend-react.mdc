@@ -16,8 +16,11 @@ alwaysApply: false
 - After frontend changes, run the smallest relevant check first:
   - `cd frontend && npm run lint`
   - `cd frontend && npm run format:check`
+  - `cd frontend && npm test`
   - `cd frontend && npm run build`
 - Docker/Makefile equivalents:
   - `make frontend-lint`
   - `make frontend-format`
+  - `make frontend-test`
   - `make npm-build`
+- Prefer Vitest + Testing Library for unit/component tests colocated as `*.test.ts(x)`.

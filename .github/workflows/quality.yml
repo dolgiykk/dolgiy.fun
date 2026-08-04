@@ -132,5 +132,9 @@ jobs:
         run: npm run format:check
 
 
+      - name: Vitest
+        run: npm test
+
+
       - name: Build
         run: npm run build

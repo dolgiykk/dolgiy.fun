@@ -22,7 +22,10 @@ export default tseslint.config(
         languageOptions: {
             ecmaVersion: 'latest',
             sourceType: 'module',
-            globals: globals.browser,
+            globals: {
+                ...globals.browser,
+                ...globals.vitest,
+            },
         },
 
         plugins: {

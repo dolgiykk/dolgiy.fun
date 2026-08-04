@@ -5,7 +5,7 @@
 	migrate fresh seed \
 	lint fix \
 	backend-lint backend-fix stan pint test \
-	frontend-lint frontend-fix frontend-format \
+	frontend-lint frontend-fix frontend-format frontend-test \
 	npm-install npm-dev npm-build \
 	clear cache-clear
 
@@ -148,12 +148,16 @@ frontend-format: ## Format frontend files
 	docker compose exec frontend npm run format
 
 
+frontend-test: ## Run frontend Vitest suite
+	docker compose exec frontend npm test
+
+
 
 # ==========================
 # Global checks
 # ==========================
 
-lint: ## Run all project checks
+lint: ## Run all project lint checks
 	make backend-lint
 	make frontend-lint
 
