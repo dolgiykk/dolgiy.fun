@@ -4,35 +4,40 @@ Personal website, VPN management platform and infrastructure playground.
 
 ## Stack
 
-### Backend
+Backend:
 
 * PHP 8.4
-* Laravel
+* Laravel 13
 * PostgreSQL 17
 * Redis 8
 
-### Frontend
+Frontend:
 
-* React
+* React 19
 * TypeScript
 * Vite
 
-### Infrastructure
+Infrastructure:
 
 * Docker
 * Docker Compose
 * Nginx
 * GitHub Actions
 
----
+## Project Layout
+
+* `backend/` is the Laravel application and API backend.
+* `frontend/` is the standalone React + Vite SPA.
+* `deploy/docker/` contains Dockerfiles and service configuration for PHP, frontend, nginx and local PHP settings.
+* `.github/workflows/quality.yml` runs backend and frontend quality checks in CI.
+
+The Laravel backend still keeps its own Vite/Tailwind skeleton files for Laravel views. The standalone user-facing SPA lives in `frontend/`.
 
 ## Requirements
 
 * Docker
 * Docker Compose
 * Git
-
----
 
 ## Installation
 
@@ -43,83 +48,54 @@ git clone git@github.com:dolgiykk/dolgiy.fun.git
 cd dolgiy.fun
 ```
 
-Copy environment:
+Copy environment files:
 
 ```bash
 cp .env.example .env
-cp frontend/.env.example frontend/.env
 cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
 
-Build and start the project:
+Build and start services:
 
 ```bash
 make build
 make up
 ```
 
----
+## Local URLs
 
-## Development
+* Backend via nginx: http://localhost:8080
+* API health check: http://localhost:8080/api/health
+* Frontend dev server: http://localhost:5173
 
-### Backend
+## Useful Commands
 
-Laravel:
-
-http://localhost:8080
-
-### Frontend
-
-React + Vite:
-
-http://localhost:5173
-
----
-
-## Useful commands
-
-| Command              | Description                  |
-|----------------------| ---------------------------- |
-| `make help`          | Show all available commands  |
-| `make build`         | Build Docker images          |
-| `make up`            | Start containers             |
-| `make down`          | Stop containers              |
-| `make restart`       | Restart containers           |
-| `make logs`          | Show application logs        |
-| `make ps`            | Show running containers      |
-| `make bash_php`      | Enter PHP container          |
-| `make bash_frontend` | Enter frontend container     |
-| `make migrate`       | Run Laravel migrations       |
-| `make lint`          | Run Laravel Pint + PHPStan   |
-| `make fix`           | Automatically fix code style |
-| `make stan`          | Run PHPStan                  |
-| `make pint`          | Run Laravel Pint             |
-| `make test`          | Run Laravel tests            |
-
----
+* `make help` shows all available commands.
+* `make build` builds and starts Docker services.
+* `make up` starts containers.
+* `make down` stops containers.
+* `make logs` follows container logs.
+* `make shell_php` opens a shell in the PHP container.
+* `make shell_frontend` opens a shell in the frontend container.
+* `make migrate` runs Laravel migrations.
+* `make test` runs Laravel tests.
+* `make lint` runs backend and frontend checks.
+* `make fix` applies backend and frontend code style fixes.
 
 ## Code Quality
 
-Backend:
+Backend checks:
 
+* Composer validate
 * Laravel Pint
 * PHPStan
-* Git pre-commit hooks
-* GitHub Actions
+* PHPUnit
 
-Frontend:
+Frontend checks:
 
+* Oxlint
 * ESLint
 * Prettier
-
----
-
-## Continuous Integration
-
-Every push to GitHub automatically runs:
-
-* Laravel Pint
-* PHPStan
-
----
+* Vite production build
 

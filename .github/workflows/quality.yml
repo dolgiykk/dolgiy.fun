@@ -91,6 +91,10 @@ jobs:
         run: composer stan
 
 
+      - name: PHPUnit
+        run: composer test
+
+
   frontend:
     name: Frontend Quality
     timeout-minutes: 10

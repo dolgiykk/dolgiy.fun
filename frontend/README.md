@@ -1,32 +1,56 @@
-# React + TypeScript + Vite
+# dolgiy.fun Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Standalone React + TypeScript + Vite application for `dolgiy.fun`.
 
-Currently, two official plugins are available:
+## Responsibilities
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* Render the public website UI.
+* Talk to the Laravel backend through `VITE_API_URL`.
+* Keep reusable UI in `src/components`.
+* Keep static UI data in `src/data` until it moves behind API endpoints.
 
-## React Compiler
+## Local Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+From the repository root:
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-    "$schema": "./node_modules/oxlint/configuration_schema.json",
-    "plugins": ["react", "typescript", "oxc"],
-    "options": {
-        "typeAware": true
-    },
-    "rules": {
-        "react/rules-of-hooks": "error",
-        "react/only-export-components": ["warn", { "allowConstantExport": true }]
-    }
-}
+```bash
+make build
+make up
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Frontend URL:
+
+```text
+http://localhost:5173
+```
+
+API base URL is configured in `.env`:
+
+```text
+VITE_API_URL=http://localhost:8080/api
+```
+
+## Project Layout
+
+* `src/main.tsx` mounts the React application.
+* `src/App.tsx` composes the current page.
+* `src/components/layout` contains page-level layout primitives.
+* `src/components/sections` contains larger page sections.
+* `src/components/ui` contains reusable UI components.
+* `src/styles` contains global, reset and variable styles.
+
+## Quality Commands
+
+```bash
+npm run lint
+npm run format:check
+npm run build
+```
+
+Use the Makefile wrappers from the repository root when working inside Docker:
+
+```bash
+make frontend-lint
+make frontend-format
+make npm-build
+```
