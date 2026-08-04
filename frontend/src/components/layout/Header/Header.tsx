@@ -9,12 +9,28 @@ export default function Header() {
             <Container>
                 <div className="header__inner">
                     <a href="/" className="header__logo">
-                        <span>🎙️</span>
+                        <span className="header__mark" aria-hidden="true">
+                            D
+                        </span>
 
-                        <span>DOLGIY.FUN</span>
+                        <span>
+                            <strong>DOLGIY.FUN</strong>
+                            <small>voice cinema</small>
+                        </span>
                     </a>
 
-                    <SocialLinks compact />
+                    <nav className="header__nav" aria-label="Основная навигация">
+                        <a href="#about">О проекте</a>
+                        <a href="#platforms">Площадки</a>
+                    </nav>
+
+                    <div className="header__actions">
+                        <SocialLinks compact />
+
+                        <a href="#platforms" className="header__cta">
+                            К площадкам
+                        </a>
+                    </div>
                 </div>
             </Container>
         </header>

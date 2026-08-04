@@ -8,7 +8,10 @@ type Props = {
 
 export default function SocialLinks({ compact = false }: Props) {
     return (
-        <nav className={`social-links ${compact ? 'social-links--compact' : ''}`}>
+        <nav
+            className={`social-links ${compact ? 'social-links--compact' : ''}`}
+            aria-label="Социальные площадки"
+        >
             {socialLinks.map(({ title, href, icon: Icon }) => (
                 <a
                     key={title}
