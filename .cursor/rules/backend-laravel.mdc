@@ -1,0 +1,24 @@
+---
+description: Laravel backend conventions and commands
+globs: backend/**/*.{php,json,neon}
+alwaysApply: false
+---
+
+# Backend Laravel
+
+- Use Laravel 13 conventions and PHP 8.4 syntax.
+- Keep API endpoints in `backend/routes/api.php`; they are exposed under `/api`.
+- Return API responses as JSON and cover new endpoints with feature tests in `backend/tests/Feature`.
+- Keep CORS settings in `backend/config/cors.php`; allowed frontend origins come from `FRONTEND_URL`.
+- Prefer Form Requests, Resources, Actions/services, and feature tests once business logic grows beyond simple routes.
+- Do not put business logic in controllers if it becomes reusable or stateful.
+- After backend changes, run the smallest relevant check first:
+  - `cd backend && php artisan test --filter=<TestName>`
+  - `cd backend && vendor/bin/pint --test`
+  - `cd backend && vendor/bin/phpstan analyse --no-progress`
+- Docker/Makefile equivalents:
+  - `make test`
+  - `make pint`
+  - `make stan`
+  - `make backend-lint`
+- If changing `backend/composer.json`, keep `backend/composer.lock` in sync and avoid unrelated dependency updates.

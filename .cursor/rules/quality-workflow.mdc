@@ -1,0 +1,26 @@
+---
+description: Quality checks, CI, hooks, and git workflow
+alwaysApply: true
+---
+
+# Quality Workflow
+
+- Main checks are defined in `.github/workflows/quality.yml`.
+- Backend CI runs Composer install, `composer validate --strict`, Pint, PHPStan, and PHPUnit.
+- Frontend CI runs `npm ci`, `npm run lint`, `npm run format:check`, and `npm run build`.
+- Preferred all-project commands:
+  - `make lint`
+  - `make fix`
+- Backend-only commands:
+  - `make backend-lint`
+  - `make test`
+  - `make stan`
+  - `make pint`
+- Frontend-only commands:
+  - `make frontend-lint`
+  - `make frontend-format`
+  - `make npm-build`
+- No tracked pre-commit or pre-push hook configuration exists at the moment. Do not claim hooks exist unless files are added.
+- If hooks are introduced later, let them run normally; do not bypass hooks with `--no-verify` unless the user explicitly asks.
+- Before committing, review `git status --short` and `git diff`; do not include `.env`, secrets, generated caches, or unrelated user changes.
+- Never run destructive git commands or revert user changes unless explicitly requested.

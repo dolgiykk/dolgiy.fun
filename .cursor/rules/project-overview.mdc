@@ -1,0 +1,16 @@
+---
+description: Project structure and stack overview for dolgiy.fun
+alwaysApply: true
+---
+
+# Project Overview
+
+- This is a monorepo with `backend/`, `frontend/`, `deploy/docker/`, and GitHub Actions.
+- Backend: PHP 8.4, Laravel 13, PostgreSQL 17, Redis 8.
+- Frontend: React 19, TypeScript, Vite, Oxlint, ESLint, Prettier.
+- Infrastructure: Docker Compose, nginx, separate Dockerfiles under `deploy/docker/`.
+- `backend/` is the Laravel API/backend. API routes live in `backend/routes/api.php` and are mounted under `/api`.
+- `frontend/` is the standalone React SPA. Do not confuse it with Laravel's default Vite/Tailwind files under `backend/resources`.
+- Local URLs: backend via nginx `http://localhost:8080`, API health `http://localhost:8080/api/health`, frontend `http://localhost:5173`.
+- Prefer existing Makefile targets over ad hoc commands when working inside containers.
+- Do not edit generated/vendor/build artifacts unless explicitly asked: `vendor/`, `node_modules/`, `frontend/dist/`, Laravel caches.

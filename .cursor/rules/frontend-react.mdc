@@ -1,0 +1,23 @@
+---
+description: React frontend conventions and commands
+globs: frontend/**/*.{ts,tsx,css,json,mjs}
+alwaysApply: false
+---
+
+# Frontend React
+
+- The standalone SPA lives in `frontend/`; use React 19, TypeScript, and Vite.
+- `src/main.tsx` mounts the app and `src/App.tsx` composes the current page.
+- Keep layout components in `src/components/layout`, page sections in `src/components/sections`, and reusable UI in `src/components/ui`.
+- Colocate component CSS next to the component when following existing patterns.
+- Static UI data can live in `src/data`; move it behind API calls when it becomes backend-owned data.
+- Use `VITE_API_URL` from `frontend/.env` for backend API calls. Avoid hardcoded API hosts in components.
+- Keep components functional and typed. Prefer small props interfaces near the component unless shared broadly.
+- After frontend changes, run the smallest relevant check first:
+  - `cd frontend && npm run lint`
+  - `cd frontend && npm run format:check`
+  - `cd frontend && npm run build`
+- Docker/Makefile equivalents:
+  - `make frontend-lint`
+  - `make frontend-format`
+  - `make npm-build`
