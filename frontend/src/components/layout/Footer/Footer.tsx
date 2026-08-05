@@ -18,9 +18,12 @@ export default function Footer({ isPlatformsLoading, platforms, platformsError }
                     <div className="footer__brand">
                         <span>DOLGIY.FUN</span>
 
-                        <h2>Озвучка, кино и немного студийной магии</h2>
+                        <h2>Озвучка поверх оригинала</h2>
 
-                        <p>Любительская озвучка фильмов. Голос, атмосфера и любимое кино.</p>
+                        <p>
+                            Любительская озвучка фильмов: русский голос, оригинальная атмосфера и
+                            чистая подача.
+                        </p>
                     </div>
 
                     <SocialLinks

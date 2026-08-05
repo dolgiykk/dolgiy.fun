@@ -1,16 +1,49 @@
 import './Hero.css';
 
+import { useEffect, useState } from 'react';
+
+import { fetchLatestDub } from '../../../api/latestDub';
+import type { LatestDub } from '../../../types/latestDub';
+
 export default function Hero() {
+    const [latestDub, setLatestDub] = useState<LatestDub | null>(null);
+    const [isLatestDubLoading, setIsLatestDubLoading] = useState(true);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        fetchLatestDub(controller.signal)
+            .then((item) => {
+                setLatestDub(item);
+            })
+            .catch((error: unknown) => {
+                if (error instanceof DOMException && error.name === 'AbortError') {
+                    return;
+                }
+
+                setLatestDub(null);
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) {
+                    setIsLatestDubLoading(false);
+                }
+            });
+
+        return () => {
+            controller.abort();
+        };
+    }, []);
+
     return (
         <section className="hero">
             <div className="hero__content">
-                <span className="hero__badge">Любительская озвучка кино</span>
+                <span className="hero__badge">Русский голос поверх оригинала</span>
 
                 <h1 className="hero__title">Голос, который добавляет кино атмосферы</h1>
 
                 <p className="hero__subtitle">
-                    DOLGIY.FUN — место для моих озвучек, любимых фильмов и живой студийной энергии.
-                    Чисто, ярко и без лишнего шума.
+                    DOLGIY.FUN — любительская озвучка: русский голос поверх оригинальной дорожки.
+                    Сохраняю настроение сцены и не заглушаю картину лишним шумом.
                 </p>
 
                 <div className="hero__actions">
@@ -26,12 +59,12 @@ export default function Hero() {
                 <dl className="hero__meta">
                     <div>
                         <dt>Формат</dt>
-                        <dd>voice acting</dd>
+                        <dd>voice-over</dd>
                     </div>
 
                     <div>
-                        <dt>Настроение</dt>
-                        <dd>cinema</dd>
+                        <dt>Дорожка</dt>
+                        <dd>original + RU</dd>
                     </div>
 
                     <div>
@@ -41,27 +74,45 @@ export default function Hero() {
                 </dl>
             </div>
 
-            <div className="hero__visual" aria-hidden="true">
+            <div className="hero__visual">
                 <div className="hero__screen">
                     <div className="hero__screen-top">
                         <span>REC</span>
-                        <span>VOICE TRACK 01</span>
+                        <span>OVER ORIGINAL</span>
                     </div>
 
-                    <div className="hero__waveform">
-                        {Array.from({ length: 20 }, (_, index) => (
-                            <span key={index} />
-                        ))}
-                    </div>
+                    {latestDub ? (
+                        <div className="hero__player">
+                            <iframe
+                                src={latestDub.embed_url}
+                                title={latestDub.title}
+                                loading="lazy"
+                                allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                allowFullScreen
+                            />
+                        </div>
+                    ) : (
+                        <div
+                            className="hero__waveform"
+                            aria-hidden="true"
+                            aria-busy={isLatestDubLoading}
+                        >
+                            {Array.from({ length: 20 }, (_, index) => (
+                                <span key={index} />
+                            ))}
+                        </div>
+                    )}
 
                     <div className="hero__caption">
-                        <span>dub session</span>
-                        <strong>DOLGIY.FUN</strong>
+                        <span>{latestDub ? 'Самая свежая озвучка' : 'dub session'}</span>
+                        <strong className={latestDub ? undefined : 'hero__caption-brand'}>
+                            {latestDub ? latestDub.title : 'DOLGIY.FUN'}
+                        </strong>
                     </div>
                 </div>
 
-                <div className="hero__reel hero__reel--left" />
-                <div className="hero__reel hero__reel--right" />
+                <div className="hero__reel hero__reel--left" aria-hidden="true" />
+                <div className="hero__reel hero__reel--right" aria-hidden="true" />
             </div>
         </section>
     );

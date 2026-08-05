@@ -12,13 +12,21 @@ vi.mock('./api/platforms', () => ({
     fetchPlatforms: vi.fn(),
 }));
 
+vi.mock('./api/latestDub', () => ({
+    fetchLatestDub: vi.fn(),
+}));
+
+import { fetchLatestDub } from './api/latestDub';
 import { fetchPlatforms } from './api/platforms';
 
 const fetchPlatformsMock = vi.mocked(fetchPlatforms);
+const fetchLatestDubMock = vi.mocked(fetchLatestDub);
 
 describe('App', () => {
     beforeEach(() => {
         fetchPlatformsMock.mockReset();
+        fetchLatestDubMock.mockReset();
+        fetchLatestDubMock.mockResolvedValue(null);
     });
 
     it('loads platforms from API and renders links in platforms section', async () => {
