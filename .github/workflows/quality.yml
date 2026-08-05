@@ -1,14 +1,17 @@
 name: Quality
 
 on:
+  workflow_call:
+
   push:
     branches:
-      - master
       - develop
     paths:
       - "backend/**"
       - "frontend/**"
       - "docker-compose.yml"
+      - "docker-compose.prod.yml"
+      - "deploy/**"
       - ".github/workflows/quality.yml"
 
   pull_request:
@@ -19,6 +22,8 @@ on:
       - "backend/**"
       - "frontend/**"
       - "docker-compose.yml"
+      - "docker-compose.prod.yml"
+      - "deploy/**"
       - ".github/workflows/quality.yml"
 
 permissions:

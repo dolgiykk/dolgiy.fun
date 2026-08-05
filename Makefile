@@ -7,6 +7,7 @@
 	backend-lint backend-fix stan pint test \
 	frontend-lint frontend-fix frontend-format frontend-test \
 	npm-install npm-dev npm-build \
+	prod-build prod-up prod-down prod-deploy prod-logs prod-ps \
 	clear cache-clear
 
 
@@ -165,6 +166,35 @@ lint: ## Run all project lint checks
 fix: ## Fix all project code style issues
 	make backend-fix
 	make frontend-fix
+
+
+
+# ==========================
+# Production
+# ==========================
+
+prod-build: ## Build production images
+	docker compose -f docker-compose.prod.yml build
+
+
+prod-up: ## Start production stack
+	docker compose -f docker-compose.prod.yml up -d
+
+
+prod-down: ## Stop production stack
+	docker compose -f docker-compose.prod.yml down
+
+
+prod-deploy: ## Build, migrate and health-check production stack
+	./deploy/scripts/deploy.sh
+
+
+prod-logs: ## Follow production logs
+	docker compose -f docker-compose.prod.yml logs -f
+
+
+prod-ps: ## List production containers
+	docker compose -f docker-compose.prod.yml ps
 
 
 

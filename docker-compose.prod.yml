@@ -1,0 +1,72 @@
+name: dolgiyfun-prod
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: deploy/docker/php/Dockerfile.prod
+    restart: unless-stopped
+    env_file:
+      - deploy/env/backend.env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - app
+    volumes:
+      - php_storage:/var/www/html/storage/app
+      - php_logs:/var/www/html/storage/logs
+
+  nginx:
+    build:
+      context: .
+      dockerfile: deploy/docker/nginx/Dockerfile.prod
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+    restart: unless-stopped
+    depends_on:
+      - php
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - app
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - app
+
+volumes:
+  postgres_data:
+  redis_data:
+  php_storage:
+  php_logs:
+
+networks:
+  app:

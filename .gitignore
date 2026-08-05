@@ -21,6 +21,7 @@ frontend/.env.*
 
 # Environment
 .env
+deploy/env/backend.env
 
 # IDE
 .idea/
