@@ -143,3 +143,19 @@ jobs:
 
       - name: Build
         run: npm run build
+
+
+  compose:
+    name: Compose Config
+    timeout-minutes: 5
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+
+      - name: Validate production compose file
+        run: docker compose -f docker-compose.prod.yml config --quiet

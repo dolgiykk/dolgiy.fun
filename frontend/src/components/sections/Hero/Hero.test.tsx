@@ -28,6 +28,7 @@ describe('Hero', () => {
         render(<Hero />);
 
         expect(screen.getByText('Русский голос поверх оригинала')).toBeInTheDocument();
+        expect(screen.getByText('OVER ORIGINAL')).toBeInTheDocument();
         expect(screen.getByText(/русский голос поверх оригинальной дорожки/i)).toBeInTheDocument();
 
         await waitFor(() => {
