@@ -85,6 +85,16 @@ make up
 * `make lint` runs backend and frontend checks.
 * `make fix` applies backend and frontend code style fixes.
 
+## Git Workflow
+
+`master` is protected: direct pushes are not allowed.
+
+1. Create a branch from `master` (`feature/...` or `fix/...`).
+2. Commit and push the branch.
+3. Open a pull request into `master`.
+4. Wait for GitHub Actions Quality checks to pass.
+5. Squash-merge the PR. Deploy runs automatically from `master`.
+
 ## Code Quality
 
 Backend checks:
@@ -154,10 +164,10 @@ Create a GitHub Environment named `production` with secrets:
 * `DEPLOY_PATH` — absolute path to the repo on the server (`/opt/dolgiy.fun`)
 * `DEPLOY_PORT` — SSH port (`22` if default)
 
-Push to `master` (or run the Deploy workflow manually) to:
+After a PR is merged into `master` (or the Deploy workflow is run manually):
 
-1. Run quality checks
-2. SSH into the server
+1. Quality checks run as the PR gate
+2. Deploy SSHes into the server
 3. `git reset --hard origin/master`
 4. Rebuild containers, migrate, seed platforms, optimize, health-check
 

@@ -27,3 +27,12 @@ alwaysApply: true
 - If hooks are introduced later, let them run normally; do not bypass hooks with `--no-verify` unless the user explicitly asks.
 - Before committing, review `git status --short` and `git diff`; do not include `.env`, secrets, generated caches, or unrelated user changes.
 - Never run destructive git commands or revert user changes unless explicitly requested.
+- Never push directly to `master` or `main`. GitHub ruleset requires pull requests.
+- For changes destined for production:
+  1. Create a feature/fix branch from the latest `master`
+  2. Commit on that branch
+  3. Push with `git push -u origin HEAD`
+  4. Open a PR into `master` with `gh pr create`
+  5. Wait for Quality checks (`Backend Quality`, `Frontend Quality`, `Compose Config`)
+  6. Merge only after checks are green (prefer `gh pr merge --squash` or `--auto --squash`)
+- Do not force-push shared branches. Do not use `--no-verify` unless the user explicitly asks.
