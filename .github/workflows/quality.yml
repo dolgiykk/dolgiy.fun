@@ -158,4 +158,7 @@ jobs:
 
 
       - name: Validate production compose file
-        run: docker compose -f docker-compose.prod.yml config --quiet
+        run: |
+          cp deploy/env/backend.env.example deploy/env/backend.env
+          cp deploy/env/compose.env.example .env
+          docker compose -f docker-compose.prod.yml --env-file .env config --quiet
