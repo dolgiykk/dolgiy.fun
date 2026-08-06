@@ -4,23 +4,154 @@ globs: frontend/**/*.{ts,tsx,css,json,mjs}
 alwaysApply: false
 ---
 
-# Frontend React
+# Frontend (React)
 
-- The standalone SPA lives in `frontend/`; use React 19, TypeScript, and Vite.
-- `src/main.tsx` mounts the app and `src/App.tsx` composes the current page.
-- Keep layout components in `src/components/layout`, page sections in `src/components/sections`, and reusable UI in `src/components/ui`.
-- Colocate component CSS next to the component when following existing patterns.
-- Static UI data can live in `src/data`; move it behind API calls when it becomes backend-owned data.
-- Use `VITE_API_URL` from `frontend/.env` for backend API calls. Avoid hardcoded API hosts in components.
-- Keep components functional and typed. Prefer small props interfaces near the component unless shared broadly.
-- After frontend changes, run the smallest relevant check first:
-  - `cd frontend && npm run lint`
-  - `cd frontend && npm run format:check`
-  - `cd frontend && npm test`
-  - `cd frontend && npm run build`
-- Docker/Makefile equivalents:
-  - `make frontend-lint`
-  - `make frontend-format`
-  - `make frontend-test`
-  - `make npm-build`
-- Prefer Vitest + Testing Library for unit/component tests colocated as `*.test.ts(x)`.
+## General
+
+- Use React 19, TypeScript and Vite.
+- Follow the existing project architecture and coding style.
+- Prefer extending existing components over creating new ones.
+- Keep changes minimal and focused.
+- Never modify unrelated files.
+- Do not introduce new dependencies unless explicitly requested.
+- Do not duplicate code.
+
+---
+
+## Components
+
+- Use functional components only.
+- Keep components small and focused on a single responsibility.
+- Extract reusable UI into `src/components/ui`.
+- Keep layout components inside `src/components/layout`.
+- Keep page sections inside `src/components/sections`.
+- Keep props strongly typed.
+- Define local interfaces close to the component unless shared across multiple files.
+
+---
+
+## State Management
+
+- Keep state as local as possible.
+- Avoid unnecessary prop drilling.
+- Do not introduce global state unless required.
+- Avoid derived state when it can be computed.
+
+---
+
+## Performance
+
+- Prioritize lightweight solutions.
+- Use the minimum amount of JavaScript necessary.
+- Avoid unnecessary React re-renders.
+- Memoize components only when there is measurable benefit.
+- Avoid premature optimization.
+- Prefer CSS animations over JavaScript animations.
+- Use lazy loading for large components or routes when appropriate.
+- Keep the DOM structure simple.
+- Avoid unnecessary wrappers.
+- Remove unused imports and dead code.
+- Avoid importing entire libraries when only individual modules are needed.
+- Optimize images and SVG assets.
+- Prefer SVG over bitmap graphics for icons and simple illustrations.
+- Do not introduce heavy frontend libraries without explicit approval.
+
+---
+
+## Responsive Design
+
+- Use a mobile-first approach.
+- Support desktop, tablet and mobile layouts.
+- Avoid horizontal scrolling.
+- Prefer Flexbox and CSS Grid.
+- Use responsive spacing and typography.
+- Ensure components scale naturally across screen sizes.
+- Test layouts at common breakpoints.
+
+---
+
+## UI / UX
+
+- Prioritize readability and accessibility.
+- Maintain consistent spacing.
+- Maintain consistent typography.
+- Maintain consistent color usage.
+- Use clear visual hierarchy.
+- Keep interactions intuitive.
+- Prefer subtle animations.
+- Avoid distracting visual effects.
+- Keep interfaces modern, clean and uncluttered.
+
+---
+
+## Project Structure
+
+- The SPA lives inside `frontend/`.
+- `src/main.tsx` bootstraps the application.
+- `src/App.tsx` composes the application.
+- Static UI data belongs in `src/data` until it becomes backend-owned.
+- Use `VITE_API_URL` for backend communication.
+- Never hardcode API URLs.
+
+---
+
+## Styling
+
+- Follow the existing styling approach.
+- Keep styles close to components when appropriate.
+- Avoid duplicated CSS.
+- Prefer reusable utility classes where available.
+- Keep CSS simple and maintainable.
+
+---
+
+## Testing & Validation
+
+After frontend changes, run the smallest relevant validation first.
+
+Prefer project scripts.
+
+Typical validation order:
+
+- `cd frontend && npm run lint`
+- `cd frontend && npm run format:check`
+- `cd frontend && npm test`
+- `cd frontend && npm run build`
+
+Docker / Make equivalents:
+
+- `make frontend-lint`
+- `make frontend-format`
+- `make frontend-test`
+- `make npm-build`
+
+Prefer running only the checks affected by the current change before running the full validation suite.
+
+---
+
+## Testing
+
+- Prefer Vitest.
+- Prefer Testing Library.
+- Keep tests close to the component (`*.test.ts` / `*.test.tsx`).
+- Cover new logic with tests when appropriate.
+
+---
+
+## Before Finishing
+
+Before considering the task complete:
+
+- Ensure there are no obvious TypeScript errors.
+- Ensure there are no lint errors.
+- Ensure the project builds successfully.
+- Ensure the implementation matches existing project conventions.
+- Briefly summarize what changed.
+
+## Visual Assets
+
+- Reuse existing assets whenever possible.
+- Prefer lightweight SVG assets.
+- Avoid large background images unless necessary.
+- Ensure decorative backgrounds never interfere with readability.
+- Decorative assets must not negatively impact performance or responsiveness.

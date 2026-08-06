@@ -9,35 +9,50 @@ use Throwable;
 
 class LatestDubCache
 {
-    private const CACHE_KEY = 'latest-dub.v1';
+    private const CACHE_KEY = 'dubs.catalog.v1';
 
     /**
      * @return array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}|null
      */
     public function latest(): ?array
     {
+        return $this->catalog()['latest'];
+    }
+
+    /**
+     * @return array{
+     *     latest: array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}|null,
+     *     others: list<array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}>
+     * }
+     */
+    public function catalog(): array
+    {
         $store = $this->store();
         $ttl = max(60, (int) config('rutube.cache_ttl_seconds', 3600));
 
-        /** @var array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}|null $latest */
-        $latest = Cache::store($store)->remember(
+        /** @var array{latest: array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}|null, others: list<array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}>} $catalog */
+        $catalog = Cache::store($store)->remember(
             self::CACHE_KEY,
             $ttl,
-            fn (): ?array => $this->fetchLatestFromRutube(),
+            fn (): array => $this->fetchCatalogFromRutube(),
         );
 
-        return $latest;
+        return $catalog;
     }
 
     public function forget(): void
     {
         Cache::store($this->store())->forget(self::CACHE_KEY);
+        Cache::store($this->store())->forget('latest-dub.v1');
     }
 
     /**
-     * @return array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}|null
+     * @return array{
+     *     latest: array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}|null,
+     *     others: list<array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}>
+     * }
      */
-    private function fetchLatestFromRutube(): ?array
+    private function fetchCatalogFromRutube(): array
     {
         $channelId = (string) config('rutube.channel_id');
 
@@ -57,34 +72,61 @@ class LatestDubCache
         } catch (Throwable $exception) {
             report($exception);
 
-            return null;
+            return [
+                'latest' => null,
+                'others' => [],
+            ];
         }
 
         $results = data_get($response, 'results', []);
 
         if (! is_array($results) || $results === []) {
-            return null;
+            return [
+                'latest' => null,
+                'others' => [],
+            ];
         }
 
-        $video = collect($results)->first(
-            static fn (mixed $item): bool => is_array($item)
-                && filled(data_get($item, 'id'))
-                && filled(data_get($item, 'embed_url'))
-                && data_get($item, 'origin_type') !== 'rshorts',
-        );
-
-        if (! is_array($video)) {
-            $video = collect($results)->first(
+        $videos = collect($results)
+            ->filter(
                 static fn (mixed $item): bool => is_array($item)
                     && filled(data_get($item, 'id'))
-                    && filled(data_get($item, 'embed_url')),
-            );
+                    && filled(data_get($item, 'embed_url'))
+                    && data_get($item, 'origin_type') !== 'rshorts',
+            )
+            ->map(fn (array $video): array => $this->mapVideo($video))
+            ->values();
+
+        if ($videos->isEmpty()) {
+            $videos = collect($results)
+                ->filter(
+                    static fn (mixed $item): bool => is_array($item)
+                        && filled(data_get($item, 'id'))
+                        && filled(data_get($item, 'embed_url')),
+                )
+                ->map(fn (array $video): array => $this->mapVideo($video))
+                ->values();
         }
 
-        if (! is_array($video)) {
-            return null;
+        if ($videos->isEmpty()) {
+            return [
+                'latest' => null,
+                'others' => [],
+            ];
         }
 
+        return [
+            'latest' => $videos->first(),
+            'others' => $videos->slice(1)->values()->all(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $video
+     * @return array{id: string, title: string, url: string, embed_url: string, thumbnail_url: string|null}
+     */
+    private function mapVideo(array $video): array
+    {
         $thumbnailUrl = data_get($video, 'thumbnail_url');
 
         return [

@@ -30,7 +30,7 @@ Infrastructure:
 * `frontend/` is the standalone React + Vite SPA.
 * `deploy/docker/` contains Dockerfiles and service configuration for PHP, frontend, nginx and local PHP settings.
 * `docker-compose.prod.yml` runs the production stack (nginx + PHP-FPM + Postgres + Redis).
-* `.github/workflows/quality.yml` runs backend and frontend quality checks in CI.
+* `.github/workflows/quality.yml` runs backend and frontend quality checks on every branch push and on PRs into `master` / `develop`.
 * `.github/workflows/deploy.yml` deploys to the server over SSH after quality checks.
 
 The Laravel backend still keeps its own Vite/Tailwind skeleton files for Laravel views. The standalone user-facing SPA lives in `frontend/`.

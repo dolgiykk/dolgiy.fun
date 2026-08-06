@@ -2,13 +2,16 @@ import './App.css';
 
 import { useEffect, useState } from 'react';
 
+import { fetchDubs } from './api/dubs';
 import { fetchPlatforms } from './api/platforms';
 import Header from './components/layout/Header/Header';
 import Hero from './components/sections/Hero/Hero';
+import OtherVideos from './components/sections/OtherVideos/OtherVideos';
 import Footer from './components/layout/Footer/Footer';
 import Container from './components/layout/Container/Container';
 import Background from './components/layout/Background/Background';
 import SocialLinks from './components/ui/SocialLinks/SocialLinks';
+import type { DubVideo } from './types/latestDub';
 import type { Platform } from './types/platform';
 
 const highlights = [
@@ -33,6 +36,10 @@ export default function App() {
     const [platforms, setPlatforms] = useState<Platform[]>([]);
     const [isPlatformsLoading, setIsPlatformsLoading] = useState(true);
     const [platformsError, setPlatformsError] = useState(false);
+
+    const [latestDub, setLatestDub] = useState<DubVideo | null>(null);
+    const [otherVideos, setOtherVideos] = useState<DubVideo[]>([]);
+    const [isDubsLoading, setIsDubsLoading] = useState(true);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -60,6 +67,33 @@ export default function App() {
         };
     }, []);
 
+    useEffect(() => {
+        const controller = new AbortController();
+
+        fetchDubs(controller.signal)
+            .then((catalog) => {
+                setLatestDub(catalog.latest);
+                setOtherVideos(catalog.others);
+            })
+            .catch((error: unknown) => {
+                if (error instanceof DOMException && error.name === 'AbortError') {
+                    return;
+                }
+
+                setLatestDub(null);
+                setOtherVideos([]);
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) {
+                    setIsDubsLoading(false);
+                }
+            });
+
+        return () => {
+            controller.abort();
+        };
+    }, []);
+
     return (
         <>
             <Background />
@@ -72,8 +106,10 @@ export default function App() {
 
             <main className="page">
                 <Container>
-                    <Hero />
+                    <Hero isLoading={isDubsLoading} latestDub={latestDub} />
                 </Container>
+
+                <OtherVideos isLoading={isDubsLoading} videos={otherVideos} />
 
                 <section className="showcase" id="about">
                     <Container>

@@ -27,6 +27,7 @@ export default function Header({ isPlatformsLoading, platforms, platformsError }
                     </a>
 
                     <nav className="header__nav" aria-label="Основная навигация">
+                        <a href="#videos">Видео</a>
                         <a href="#about">О проекте</a>
                         <a href="#platforms">Площадки</a>
                     </nav>

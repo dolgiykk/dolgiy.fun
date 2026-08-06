@@ -36,6 +36,14 @@ class LatestDubApiTest extends TestCase
                         'thumbnail_url' => 'https://example.com/classic.jpg',
                         'origin_type' => 'rtb',
                     ],
+                    [
+                        'id' => 'another-classic-id-123456789012345678',
+                        'title' => 'Стрелок — озвучено dolgiy.fun',
+                        'video_url' => 'https://rutube.ru/video/another-classic-id-123456789012345678/',
+                        'embed_url' => 'https://rutube.ru/play/embed/another-classic-id-123456789012345678',
+                        'thumbnail_url' => 'https://example.com/gun.jpg',
+                        'origin_type' => 'rtb',
+                    ],
                 ],
             ]),
         ]);
@@ -54,6 +62,47 @@ class LatestDubApiTest extends TestCase
             );
     }
 
+    public function test_dubs_endpoint_returns_latest_and_other_videos(): void
+    {
+        Http::fake([
+            'rutube.ru/api/video/person/*' => Http::response([
+                'results' => [
+                    [
+                        'id' => 'classic-video-id-12345678901234567890',
+                        'title' => 'Две минуты — озвучено dolgiy.fun',
+                        'video_url' => 'https://rutube.ru/video/classic-video-id-12345678901234567890/',
+                        'embed_url' => 'https://rutube.ru/play/embed/classic-video-id-12345678901234567890',
+                        'thumbnail_url' => 'https://example.com/classic.jpg',
+                        'origin_type' => 'rtb',
+                    ],
+                    [
+                        'id' => 'another-classic-id-123456789012345678',
+                        'title' => 'Стрелок — озвучено dolgiy.fun',
+                        'video_url' => 'https://rutube.ru/video/another-classic-id-123456789012345678/',
+                        'embed_url' => 'https://rutube.ru/play/embed/another-classic-id-123456789012345678',
+                        'thumbnail_url' => 'https://example.com/gun.jpg',
+                        'origin_type' => 'rtb',
+                    ],
+                    [
+                        'id' => 'short-video-id-1234567890123456789012',
+                        'title' => 'Short demo',
+                        'video_url' => 'https://rutube.ru/video/short-video-id-1234567890123456789012/',
+                        'embed_url' => 'https://rutube.ru/play/embed/short-video-id-1234567890123456789012',
+                        'thumbnail_url' => 'https://example.com/short.jpg',
+                        'origin_type' => 'rshorts',
+                    ],
+                ],
+            ]),
+        ]);
+
+        $this->getJson('/api/dubs')
+            ->assertOk()
+            ->assertJsonPath('data.latest.id', 'classic-video-id-12345678901234567890')
+            ->assertJsonCount(1, 'data.others')
+            ->assertJsonPath('data.others.0.id', 'another-classic-id-123456789012345678')
+            ->assertJsonPath('data.others.0.title', 'Стрелок — озвучено dolgiy.fun');
+    }
+
     public function test_latest_dub_endpoint_returns_null_data_when_rutube_is_unavailable(): void
     {
         Http::fake([
@@ -64,6 +113,15 @@ class LatestDubApiTest extends TestCase
             ->assertOk()
             ->assertExactJson([
                 'data' => null,
+            ]);
+
+        $this->getJson('/api/dubs')
+            ->assertOk()
+            ->assertExactJson([
+                'data' => [
+                    'latest' => null,
+                    'others' => [],
+                ],
             ]);
     }
 
@@ -101,9 +159,9 @@ class LatestDubApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.id', 'first-video-id-123456789012345678901');
 
-        $this->getJson('/api/latest-dub')
+        $this->getJson('/api/dubs')
             ->assertOk()
-            ->assertJsonPath('data.id', 'first-video-id-123456789012345678901');
+            ->assertJsonPath('data.latest.id', 'first-video-id-123456789012345678901');
 
         Http::assertSentCount(1);
     }
