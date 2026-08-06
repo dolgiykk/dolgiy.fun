@@ -3,9 +3,8 @@ name: Quality
 on:
   workflow_call:
 
+  # Run on every branch push so feature work is validated before opening a PR.
   push:
-    branches:
-      - develop
     paths:
       - "backend/**"
       - "frontend/**"
@@ -14,6 +13,7 @@ on:
       - "deploy/**"
       - ".github/workflows/quality.yml"
 
+  # Re-run on PRs into protected branches (e.g. new commits after review).
   pull_request:
     branches:
       - master
