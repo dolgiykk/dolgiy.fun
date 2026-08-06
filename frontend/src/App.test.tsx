@@ -12,21 +12,21 @@ vi.mock('./api/platforms', () => ({
     fetchPlatforms: vi.fn(),
 }));
 
-vi.mock('./api/latestDub', () => ({
-    fetchLatestDub: vi.fn(),
+vi.mock('./api/dubs', () => ({
+    fetchDubs: vi.fn(),
 }));
 
-import { fetchLatestDub } from './api/latestDub';
+import { fetchDubs } from './api/dubs';
 import { fetchPlatforms } from './api/platforms';
 
 const fetchPlatformsMock = vi.mocked(fetchPlatforms);
-const fetchLatestDubMock = vi.mocked(fetchLatestDub);
+const fetchDubsMock = vi.mocked(fetchDubs);
 
 describe('App', () => {
     beforeEach(() => {
         fetchPlatformsMock.mockReset();
-        fetchLatestDubMock.mockReset();
-        fetchLatestDubMock.mockResolvedValue(null);
+        fetchDubsMock.mockReset();
+        fetchDubsMock.mockResolvedValue({ latest: null, others: [] });
     });
 
     it('loads platforms from API and renders links in platforms section', async () => {
@@ -53,6 +53,7 @@ describe('App', () => {
             within(platformsSection as HTMLElement).getByRole('link', { name: 'Telegram' }),
         ).toHaveAttribute('href', 'https://t.me/dolgiy_fun');
         expect(fetchPlatformsMock).toHaveBeenCalledTimes(1);
+        expect(fetchDubsMock).toHaveBeenCalledTimes(1);
     });
 
     it('shows unavailable status when platforms request fails', async () => {

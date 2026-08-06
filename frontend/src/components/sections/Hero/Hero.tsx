@@ -1,39 +1,13 @@
 import './Hero.css';
 
-import { useEffect, useState } from 'react';
+import type { DubVideo } from '../../../types/latestDub';
 
-import { fetchLatestDub } from '../../../api/latestDub';
-import type { LatestDub } from '../../../types/latestDub';
+type Props = {
+    isLoading: boolean;
+    latestDub: DubVideo | null;
+};
 
-export default function Hero() {
-    const [latestDub, setLatestDub] = useState<LatestDub | null>(null);
-    const [isLatestDubLoading, setIsLatestDubLoading] = useState(true);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        fetchLatestDub(controller.signal)
-            .then((item) => {
-                setLatestDub(item);
-            })
-            .catch((error: unknown) => {
-                if (error instanceof DOMException && error.name === 'AbortError') {
-                    return;
-                }
-
-                setLatestDub(null);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) {
-                    setIsLatestDubLoading(false);
-                }
-            });
-
-        return () => {
-            controller.abort();
-        };
-    }, []);
-
+export default function Hero({ isLoading, latestDub }: Props) {
     return (
         <section className="hero">
             <div className="hero__content">
@@ -92,11 +66,7 @@ export default function Hero() {
                             />
                         </div>
                     ) : (
-                        <div
-                            className="hero__waveform"
-                            aria-hidden="true"
-                            aria-busy={isLatestDubLoading}
-                        >
+                        <div className="hero__waveform" aria-hidden="true" aria-busy={isLoading}>
                             {Array.from({ length: 20 }, (_, index) => (
                                 <span key={index} />
                             ))}
