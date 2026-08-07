@@ -1,6 +1,9 @@
 import './Hero.css';
 
+import { useState } from 'react';
+
 import type { DubVideo } from '../../../types/latestDub';
+import VideoModal from '../../ui/VideoModal/VideoModal';
 
 type Props = {
     isLoading: boolean;
@@ -8,6 +11,8 @@ type Props = {
 };
 
 export default function Hero({ isLoading, latestDub }: Props) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <section className="hero">
             <div className="hero__content">
@@ -56,15 +61,31 @@ export default function Hero({ isLoading, latestDub }: Props) {
                     </div>
 
                     {latestDub ? (
-                        <div className="hero__player">
-                            <iframe
-                                src={latestDub.embed_url}
-                                title={latestDub.title}
-                                loading="lazy"
-                                allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                allowFullScreen
-                            />
-                        </div>
+                        <button
+                            type="button"
+                            className="hero__player"
+                            onClick={() => setIsModalOpen(true)}
+                            aria-label={`Смотреть: ${latestDub.title}`}
+                        >
+                            {latestDub.thumbnail_url ? (
+                                <img
+                                    src={latestDub.thumbnail_url}
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                            ) : (
+                                <span className="hero__player-fallback" aria-hidden="true">
+                                    REC
+                                </span>
+                            )}
+
+                            <span className="hero__play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                                    <path d="M8 5.14v13.72L19 12 8 5.14z" />
+                                </svg>
+                            </span>
+                        </button>
                     ) : (
                         <div className="hero__waveform" aria-hidden="true" aria-busy={isLoading}>
                             {Array.from({ length: 20 }, (_, index) => (
@@ -84,6 +105,11 @@ export default function Hero({ isLoading, latestDub }: Props) {
                 <div className="hero__reel hero__reel--left" aria-hidden="true" />
                 <div className="hero__reel hero__reel--right" aria-hidden="true" />
             </div>
+
+            <VideoModal
+                video={isModalOpen ? latestDub : null}
+                onClose={() => setIsModalOpen(false)}
+            />
         </section>
     );
 }
