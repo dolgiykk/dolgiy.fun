@@ -13,7 +13,7 @@ RUN composer install \
 
 COPY backend/ .
 
-RUN composer dump-autoload --optimize --classmap-authoritative --no-dev \
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev --no-scripts \
     && php -r "file_exists('bootstrap/cache') || mkdir('bootstrap/cache', 0775, true);"
 
 
@@ -50,8 +50,15 @@ RUN chmod +x /usr/local/bin/entrypoint.prod.sh
 
 COPY --from=vendor /app /var/www/html
 
+# Build-time env must not use empty DB_CONNECTION with CACHE_STORE=database:
+# AppServiceProvider registers RateLimiter, which resolves the cache store and boots DB.
 RUN cp .env.example .env \
-    && php artisan package:discover --ansi \
+    && CACHE_STORE=array \
+       SESSION_DRIVER=array \
+       QUEUE_CONNECTION=sync \
+       DB_CONNECTION=sqlite \
+       APP_KEY=base64:dGVtcG9yYXJ5LWtleS1mb3ItZG9ja2VyLWJ1aWxkLW9ubHk= \
+       php artisan package:discover --ansi \
     && rm .env \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
