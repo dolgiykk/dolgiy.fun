@@ -144,6 +144,25 @@ sudo nginx -t && sudo systemctl reload nginx
 * https://dolgiy.fun/
 * https://dolgiy.fun/api/health
 
+### Authentication
+
+SPA auth uses Laravel Sanctum cookies (email + password, no OAuth).
+
+Local setup:
+
+1. Set in `backend/.env`:
+   - `APP_URL=http://localhost:8080`
+   - `FRONTEND_URL=http://localhost:5173`
+   - `SANCTUM_STATEFUL_DOMAINS=localhost,localhost:5173,127.0.0.1,127.0.0.1:5173`
+   - `SESSION_DOMAIN=null` (local)
+   - Mailpit SMTP: `MAIL_MAILER=smtp`, `MAIL_HOST=mailpit`, `MAIL_PORT=1025`
+2. Run migrations/seed: `docker compose exec php php artisan migrate --seed`
+3. Default admin from seed: `admin@dolgiy.fun` / `password` (override via `ADMIN_*`)
+4. Open Mailpit UI at http://localhost:8025 to read verification / password-reset emails
+
+Password reset / email verify use branded HTML mail. Locally they go through Mailpit.
+On production set real SMTP in `deploy/env/backend.env` (`MAIL_HOST` / `MAIL_USERNAME` / `MAIL_PASSWORD`); Mailpit is local-only via `docker-compose.override.yml`.
+
 ### GitHub Actions autodeploy
 
 Create a GitHub Environment named `production` with secrets:
