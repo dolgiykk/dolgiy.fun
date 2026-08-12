@@ -31,6 +31,7 @@ done
 echo "==> Running migrations and platform seed"
 "${COMPOSE[@]}" exec -T php php artisan migrate --force
 "${COMPOSE[@]}" exec -T php php artisan db:seed --force --class='Database\Seeders\PlatformSeeder'
+"${COMPOSE[@]}" exec -T php php artisan db:seed --force --class='Database\Seeders\AdminUserSeeder'
 
 echo "==> Caching Laravel config/routes/views"
 "${COMPOSE[@]}" exec -T php php artisan optimize

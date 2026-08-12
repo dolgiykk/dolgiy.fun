@@ -1,7 +1,9 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import App from './App';
+import { AuthProvider } from './auth/AuthProvider';
 import { mockPlatforms } from './test/fixtures';
 
 vi.mock('./components/layout/Background/Background', () => ({
@@ -16,11 +18,32 @@ vi.mock('./api/dubs', () => ({
     fetchDubs: vi.fn(),
 }));
 
+vi.mock('./api/auth', () => ({
+    fetchCurrentUser: vi.fn().mockResolvedValue(null),
+    loginUser: vi.fn(),
+    logoutUser: vi.fn(),
+    registerUser: vi.fn(),
+    updateProfile: vi.fn(),
+    forgotPassword: vi.fn(),
+    resetPassword: vi.fn(),
+    AuthApiError: class AuthApiError extends Error {},
+}));
+
 import { fetchDubs } from './api/dubs';
 import { fetchPlatforms } from './api/platforms';
 
 const fetchPlatformsMock = vi.mocked(fetchPlatforms);
 const fetchDubsMock = vi.mocked(fetchDubs);
+
+function renderApp() {
+    return render(
+        <MemoryRouter>
+            <AuthProvider>
+                <App />
+            </AuthProvider>
+        </MemoryRouter>,
+    );
+}
 
 describe('App', () => {
     beforeEach(() => {
@@ -32,7 +55,7 @@ describe('App', () => {
     it('loads platforms from API and renders links in platforms section', async () => {
         fetchPlatformsMock.mockResolvedValue(mockPlatforms);
 
-        render(<App />);
+        renderApp();
 
         expect(
             screen.getAllByRole('navigation', { name: 'Социальные площадки загружаются' }),
@@ -59,7 +82,7 @@ describe('App', () => {
     it('shows unavailable status when platforms request fails', async () => {
         fetchPlatformsMock.mockRejectedValue(new Error('network'));
 
-        render(<App />);
+        renderApp();
 
         await waitFor(() => {
             expect(screen.getAllByText('Площадки временно недоступны').length).toBeGreaterThan(0);
@@ -71,7 +94,7 @@ describe('App', () => {
     it('passes abort signal to platforms request', async () => {
         fetchPlatformsMock.mockResolvedValue(mockPlatforms);
 
-        const { unmount } = render(<App />);
+        const { unmount } = renderApp();
 
         expect(fetchPlatformsMock).toHaveBeenCalledWith(expect.any(AbortSignal));
 

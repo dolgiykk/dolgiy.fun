@@ -1,21 +1,34 @@
 import './Header.css';
 
-import Container from '../Container/Container';
-import SocialLinks from '../../ui/SocialLinks/SocialLinks';
+import { Link } from 'react-router-dom';
+
+import type { AuthUser } from '../../../types/auth';
 import type { Platform } from '../../../types/platform';
+import SocialLinks from '../../ui/SocialLinks/SocialLinks';
+import Container from '../Container/Container';
 
 type Props = {
     isPlatformsLoading: boolean;
     platforms: Platform[];
     platformsError: boolean;
+    user: AuthUser | null;
+    isAuthLoading: boolean;
+    onLogout: () => Promise<void>;
 };
 
-export default function Header({ isPlatformsLoading, platforms, platformsError }: Props) {
+export default function Header({
+    isPlatformsLoading,
+    platforms,
+    platformsError,
+    user,
+    isAuthLoading,
+    onLogout,
+}: Props) {
     return (
         <header className="header">
             <Container>
                 <div className="header__inner">
-                    <a href="/" className="header__logo">
+                    <Link to="/" className="header__logo">
                         <span className="header__mark" aria-hidden="true">
                             D
                         </span>
@@ -24,12 +37,12 @@ export default function Header({ isPlatformsLoading, platforms, platformsError }
                             <strong>DOLGIY.FUN</strong>
                             <small>voice cinema</small>
                         </span>
-                    </a>
+                    </Link>
 
                     <nav className="header__nav" aria-label="Основная навигация">
-                        <a href="#videos">Видео</a>
-                        <a href="#about">О проекте</a>
-                        <a href="#platforms">Площадки</a>
+                        <a href="/#videos">Видео</a>
+                        <a href="/#about">О проекте</a>
+                        <a href="/#platforms">Площадки</a>
                     </nav>
 
                     <div className="header__actions">
@@ -40,9 +53,32 @@ export default function Header({ isPlatformsLoading, platforms, platformsError }
                             platforms={platforms}
                         />
 
-                        <a href="#platforms" className="header__cta">
-                            К площадкам
-                        </a>
+                        {!isAuthLoading &&
+                            (user ? (
+                                <>
+                                    <Link to="/account" className="header__user">
+                                        @{user.username || 'профиль'}
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        className="header__cta header__cta--ghost"
+                                        onClick={() => {
+                                            void onLogout();
+                                        }}
+                                    >
+                                        Выйти
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/login" className="header__user">
+                                        Войти
+                                    </Link>
+                                    <Link to="/register" className="header__cta">
+                                        Регистрация
+                                    </Link>
+                                </>
+                            ))}
                     </div>
                 </div>
             </Container>
