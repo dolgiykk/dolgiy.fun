@@ -9,17 +9,25 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
     public function store(RegisterRequest $request): JsonResponse
     {
-        $user = User::query()->create($request->validatedUserData());
+        $user = DB::transaction(function () use ($request): User {
+            $user = User::query()->create($request->validatedUserData());
 
-        event(new Registered($user));
+            event(new Registered($user));
+
+            return $user;
+        });
 
         Auth::login($user);
-        $request->session()->regenerate();
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
 
         return response()->json([
             'data' => new UserResource($user),
