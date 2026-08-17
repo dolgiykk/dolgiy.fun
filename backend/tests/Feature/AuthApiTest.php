@@ -5,10 +5,13 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmailNotification;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
+use RuntimeException;
 use Tests\TestCase;
 
 class AuthApiTest extends TestCase
@@ -61,6 +64,24 @@ class AuthApiTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'no-origin@example.com',
             'username' => 'no_origin',
+        ]);
+    }
+
+    public function test_registration_rolls_back_when_verification_email_fails(): void
+    {
+        Event::listen(Registered::class, static function (): never {
+            throw new RuntimeException('Unable to send verification email.');
+        });
+
+        $this->postJson('/api/register', [
+            'username' => 'rollback_me',
+            'email' => 'rollback@example.com',
+            'password' => 'Password1!',
+            'password_confirmation' => 'Password1!',
+        ])->assertServerError();
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'rollback@example.com',
         ]);
     }
 
