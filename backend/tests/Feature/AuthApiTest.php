@@ -37,6 +37,33 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('data.username', 'dolgiy_fan');
     }
 
+    public function test_registration_succeeds_without_frontend_origin_headers(): void
+    {
+        $this->call(
+            'POST',
+            '/api/register',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_ACCEPT' => 'application/json',
+            ],
+            json_encode([
+                'username' => 'no_origin',
+                'email' => 'no-origin@example.com',
+                'password' => 'Password1!',
+                'password_confirmation' => 'Password1!',
+            ], JSON_THROW_ON_ERROR),
+        )->assertCreated()
+            ->assertJsonPath('data.username', 'no_origin');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'no-origin@example.com',
+            'username' => 'no_origin',
+        ]);
+    }
+
     public function test_registration_sends_verification_email_and_link_activates_user(): void
     {
         Notification::fake();

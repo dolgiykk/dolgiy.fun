@@ -19,7 +19,10 @@ class RegisterController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
-        $request->session()->regenerate();
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
 
         return response()->json([
             'data' => new UserResource($user),
