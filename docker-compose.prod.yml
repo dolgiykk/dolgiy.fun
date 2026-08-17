@@ -43,6 +43,9 @@ services:
       POSTGRES_DB: ${DB_DATABASE:-dolfun}
       POSTGRES_USER: ${DB_USERNAME:-dolfun}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-change-me}
+    ports:
+      # Localhost only — for SSH tunnels / DBeaver. Not exposed to the public internet.
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
