@@ -1,6 +1,7 @@
 import './VideoEngagement.css';
 
-import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
+import { type FormEvent, type ReactNode, useEffect, useId, useState } from 'react';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import {
@@ -86,6 +87,7 @@ export default function VideoEngagement({ videoId, children }: Props) {
     const [formError, setFormError] = useState<string | null>(null);
     const [promptAuth, setPromptAuth] = useState(false);
 
+    const commentFieldId = useId();
     const canComment = Boolean(user && !user.needs_username);
 
     useEffect(() => {
@@ -234,7 +236,14 @@ export default function VideoEngagement({ videoId, children }: Props) {
                         }}
                         disabled={isLiking}
                     >
-                        <span aria-hidden="true">♥</span>
+                        {liked ? (
+                            <FaHeart className="video-engagement__like-icon" aria-hidden="true" />
+                        ) : (
+                            <FaRegHeart
+                                className="video-engagement__like-icon"
+                                aria-hidden="true"
+                            />
+                        )}
                         <span>{likesCount}</span>
                     </button>
                     <p className="video-engagement__count">{formatCommentsCount(commentsCount)}</p>
@@ -246,20 +255,28 @@ export default function VideoEngagement({ videoId, children }: Props) {
                             {formError ? (
                                 <p className="video-engagement__error">{formError}</p>
                             ) : null}
-                            <label>
-                                Комментарий
-                                <textarea
-                                    value={body}
-                                    maxLength={2000}
-                                    rows={2}
-                                    placeholder="Напишите, что думаете об озвучке"
-                                    onChange={(event) => setBody(event.target.value)}
-                                    required
-                                />
-                            </label>
-                            <button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? 'Отправляем…' : 'Отправить'}
-                            </button>
+                            <div className="video-engagement__field">
+                                <label
+                                    className="video-engagement__field-label"
+                                    htmlFor={commentFieldId}
+                                >
+                                    Комментарий
+                                </label>
+                                <div className="video-engagement__field-box">
+                                    <textarea
+                                        id={commentFieldId}
+                                        value={body}
+                                        maxLength={2000}
+                                        rows={2}
+                                        placeholder="Напишите здесь что-нибудь"
+                                        onChange={(event) => setBody(event.target.value)}
+                                        required
+                                    />
+                                    <button type="submit" disabled={isSubmitting}>
+                                        {isSubmitting ? 'Отправляем…' : 'Отправить'}
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     ) : null}
 

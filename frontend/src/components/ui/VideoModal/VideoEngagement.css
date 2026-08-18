@@ -56,6 +56,12 @@
     transition: var(--transition);
 }
 
+.video-engagement__like-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+}
+
 .video-engagement__like:hover,
 .video-engagement__like:focus-visible,
 .video-engagement__like.is-active {
@@ -185,26 +191,25 @@
     gap: 0.65rem;
 }
 
-.video-engagement__guest {
-    display: grid;
-    align-self: start;
-    width: 100%;
-    gap: 0.75rem;
-    padding: 0.9rem 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: rgb(255 255 255 / 6%);
-}
-
-.video-engagement__form label {
+.video-engagement__field {
+    position: relative;
     display: grid;
     flex: 1 1 auto;
     grid-template-rows: auto minmax(0, 1fr);
     gap: 0.4rem;
     min-height: 0;
+}
+
+.video-engagement__field-label {
     color: var(--color-muted);
     font-size: 0.88rem;
     font-weight: 700;
+}
+
+.video-engagement__field-box {
+    position: relative;
+    display: grid;
+    min-height: 0;
 }
 
 .video-engagement__form textarea {
@@ -214,7 +219,7 @@
     height: 100%;
     min-height: 7rem;
     resize: none;
-    padding: 0.7rem 0.8rem;
+    padding: 0.7rem 0.8rem 2.8rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: rgb(0 0 0 / 25%);
@@ -230,14 +235,17 @@
 }
 
 .video-engagement__form button {
-    flex: none;
-    align-self: start;
-    padding: 0.65rem 0.95rem;
+    position: absolute;
+    right: 0.45rem;
+    bottom: 0.45rem;
+    padding: 0.38rem 0.75rem;
     border: 0;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     background: linear-gradient(135deg, #c4b5fd, #7c3aed);
     color: #f8fafc;
+    font-size: 0.78rem;
     font-weight: 800;
+    line-height: 1;
     cursor: pointer;
 }
 
@@ -252,6 +260,17 @@
 .video-engagement__form button:disabled {
     opacity: 0.7;
     cursor: wait;
+}
+
+.video-engagement__guest {
+    display: grid;
+    align-self: start;
+    width: 100%;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: rgb(255 255 255 / 6%);
 }
 
 .video-engagement__guest.is-highlighted {
@@ -319,6 +338,48 @@
     .video-engagement {
         grid-template-columns: 1fr;
         grid-template-rows: auto minmax(0, 1fr);
+        gap: 0.65rem;
+    }
+
+    .video-engagement__media {
+        flex: none;
+        gap: 0.5rem;
+    }
+
+    .video-engagement__composer {
+        flex: none;
+    }
+
+    .video-engagement__form {
+        height: auto;
+    }
+
+    .video-engagement__field {
+        flex: none;
+        grid-template-rows: minmax(0, 1fr);
+    }
+
+    .video-engagement__field-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .video-engagement__form textarea {
+        min-height: 4.4rem;
+        height: 4.4rem;
+        padding: 0.55rem 0.7rem 2.4rem;
+    }
+
+    .video-engagement__form button {
+        padding: 0.32rem 0.65rem;
+        font-size: 0.72rem;
     }
 
     .video-engagement__comments {
@@ -326,5 +387,25 @@
         border-left: 0;
         padding-top: 0.35rem;
         border-top: 1px solid var(--color-border);
+        gap: 0.5rem;
+    }
+
+    .video-engagement__heading {
+        font-size: 0.95rem;
+    }
+
+    .video-engagement__item {
+        padding: 0.55rem 0.65rem 0.45rem;
+    }
+
+    .video-engagement__guest-actions {
+        gap: 0.5rem;
+    }
+
+    .video-engagement__cta,
+    .video-engagement__secondary {
+        min-height: 2.2rem;
+        padding: 0 0.85rem;
+        font-size: 0.85rem;
     }
 }
