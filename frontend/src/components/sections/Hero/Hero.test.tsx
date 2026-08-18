@@ -1,8 +1,28 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
 
 import Hero from './Hero';
+
+vi.mock('../../../auth/useAuth', () => ({
+    useAuth: () => ({ user: null, isLoading: false }),
+}));
+
+vi.mock('../../../api/engagement', () => ({
+    fetchVideoEngagement: vi.fn().mockResolvedValue({
+        likes_count: 0,
+        liked: false,
+        comments_count: 0,
+        has_more: false,
+        comments: [],
+    }),
+    likeVideo: vi.fn(),
+    unlikeVideo: vi.fn(),
+    createComment: vi.fn(),
+    deleteComment: vi.fn(),
+    EngagementApiError: class EngagementApiError extends Error {},
+}));
 
 const latestDub = {
     id: 'e4bca09605bc08619d9f75b17e95a45c',
@@ -16,7 +36,11 @@ describe('Hero', () => {
     it('renders voice-over copy and opens the latest video in a popup', async () => {
         const user = userEvent.setup();
 
-        render(<Hero isLoading={false} latestDub={latestDub} />);
+        render(
+            <MemoryRouter>
+                <Hero isLoading={false} latestDub={latestDub} />
+            </MemoryRouter>,
+        );
 
         expect(screen.getByText('Русский голос поверх оригинала')).toBeInTheDocument();
         expect(screen.getByText('OVER ORIGINAL')).toBeInTheDocument();

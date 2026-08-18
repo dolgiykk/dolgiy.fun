@@ -18,7 +18,6 @@ import ForgotPasswordPage from './components/pages/ForgotPasswordPage';
 import LoginPage from './components/pages/LoginPage';
 import RegisterPage from './components/pages/RegisterPage';
 import ResetPasswordPage from './components/pages/ResetPasswordPage';
-import SocialLinks from './components/ui/SocialLinks/SocialLinks';
 import type { DubVideo } from './types/latestDub';
 import type { Platform } from './types/platform';
 
@@ -41,16 +40,10 @@ const highlights = [
 ];
 
 function HomePage({
-    platforms,
-    isPlatformsLoading,
-    platformsError,
     latestDub,
     otherVideos,
     isDubsLoading,
 }: {
-    platforms: Platform[];
-    isPlatformsLoading: boolean;
-    platformsError: boolean;
     latestDub: DubVideo | null;
     otherVideos: DubVideo[];
     isDubsLoading: boolean;
@@ -78,23 +71,6 @@ function HomePage({
                                 <p>{item.text}</p>
                             </article>
                         ))}
-                    </div>
-                </Container>
-            </section>
-
-            <section className="platforms" id="platforms">
-                <Container>
-                    <div className="platforms__panel">
-                        <div>
-                            <span className="section-kicker">Площадки</span>
-                            <h2>Следите за новыми озвучками там, где удобно</h2>
-                        </div>
-
-                        <SocialLinks
-                            hasError={platformsError}
-                            isLoading={isPlatformsLoading}
-                            platforms={platforms}
-                        />
                     </div>
                 </Container>
             </section>
@@ -183,9 +159,6 @@ export default function App() {
                     path="/"
                     element={
                         <HomePage
-                            platforms={platforms}
-                            isPlatformsLoading={isPlatformsLoading}
-                            platformsError={platformsError}
                             latestDub={latestDub}
                             otherVideos={otherVideos}
                             isDubsLoading={isDubsLoading}
