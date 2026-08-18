@@ -42,7 +42,6 @@ export default function Header({
                     <nav className="header__nav" aria-label="Основная навигация">
                         <a href="/#videos">Видео</a>
                         <a href="/#about">О проекте</a>
-                        <a href="/#platforms">Площадки</a>
                     </nav>
 
                     <div className="header__actions">

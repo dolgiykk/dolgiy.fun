@@ -52,7 +52,7 @@ describe('App', () => {
         fetchDubsMock.mockResolvedValue({ latest: null, others: [] });
     });
 
-    it('loads platforms from API and renders links in platforms section', async () => {
+    it('loads platforms from API and renders links in the footer', async () => {
         fetchPlatformsMock.mockResolvedValue(mockPlatforms);
 
         renderApp();
@@ -65,16 +65,12 @@ describe('App', () => {
             expect(screen.getAllByRole('link', { name: 'Telegram' }).length).toBeGreaterThan(0);
         });
 
-        const platformsSection = screen
-            .getByRole('heading', {
-                name: /Следите за новыми озвучками/i,
-            })
-            .closest('section');
-
-        expect(platformsSection).not.toBeNull();
         expect(
-            within(platformsSection as HTMLElement).getByRole('link', { name: 'Telegram' }),
+            within(screen.getByRole('contentinfo')).getByRole('link', { name: 'Telegram' }),
         ).toHaveAttribute('href', 'https://t.me/dolgiy_fun');
+        expect(
+            screen.queryByRole('heading', { name: /Следите за новыми озвучками/i }),
+        ).not.toBeInTheDocument();
         expect(fetchPlatformsMock).toHaveBeenCalledTimes(1);
         expect(fetchDubsMock).toHaveBeenCalledTimes(1);
     });

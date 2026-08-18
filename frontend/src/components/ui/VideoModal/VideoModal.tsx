@@ -1,8 +1,10 @@
 import './VideoModal.css';
 
 import { useEffect, useEffectEvent, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 import type { DubVideo } from '../../../types/latestDub';
+import VideoEngagement from './VideoEngagement';
 
 type Props = {
     video: DubVideo | null;
@@ -42,7 +44,7 @@ export default function VideoModal({ video, onClose }: Props) {
         return null;
     }
 
-    return (
+    return createPortal(
         <div className="video-modal" role="presentation" onClick={onClose}>
             <div
                 className="video-modal__dialog"
@@ -67,15 +69,18 @@ export default function VideoModal({ video, onClose }: Props) {
                     </button>
                 </div>
 
-                <div className="video-modal__player">
-                    <iframe
-                        src={video.embed_url}
-                        title={video.title}
-                        allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture; autoplay"
-                        allowFullScreen
-                    />
-                </div>
+                <VideoEngagement key={video.id} videoId={video.id}>
+                    <div className="video-modal__player">
+                        <iframe
+                            src={video.embed_url}
+                            title={video.title}
+                            allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture; autoplay"
+                            allowFullScreen
+                        />
+                    </div>
+                </VideoEngagement>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }

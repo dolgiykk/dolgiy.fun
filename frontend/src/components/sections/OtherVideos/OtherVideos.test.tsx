@@ -1,8 +1,28 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
 
 import OtherVideos from './OtherVideos';
+
+vi.mock('../../../auth/useAuth', () => ({
+    useAuth: () => ({ user: null, isLoading: false }),
+}));
+
+vi.mock('../../../api/engagement', () => ({
+    fetchVideoEngagement: vi.fn().mockResolvedValue({
+        likes_count: 0,
+        liked: false,
+        comments_count: 0,
+        has_more: false,
+        comments: [],
+    }),
+    likeVideo: vi.fn(),
+    unlikeVideo: vi.fn(),
+    createComment: vi.fn(),
+    deleteComment: vi.fn(),
+    EngagementApiError: class EngagementApiError extends Error {},
+}));
 
 const otherVideo = {
     id: 'other-id',
@@ -16,7 +36,11 @@ describe('OtherVideos', () => {
     it('renders other videos and opens popup player', async () => {
         const user = userEvent.setup();
 
-        render(<OtherVideos isLoading={false} videos={[otherVideo]} />);
+        render(
+            <MemoryRouter>
+                <OtherVideos isLoading={false} videos={[otherVideo]} />
+            </MemoryRouter>,
+        );
 
         expect(
             screen.getByRole('button', { name: /Смотреть: Стрелок — озвучено dolgiy.fun/i }),

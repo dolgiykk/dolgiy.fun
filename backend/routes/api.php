@@ -5,9 +5,12 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\UserController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DubController;
 use App\Http\Controllers\Api\LatestDubController;
 use App\Http\Controllers\Api\PlatformController;
+use App\Http\Controllers\Api\VideoEngagementController;
+use App\Support\VideoId;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', static fn (): array => [
@@ -19,6 +22,22 @@ Route::get('/platforms', [PlatformController::class, 'index'])->name('api.platfo
 Route::get('/latest-dub', [LatestDubController::class, 'show'])->name('api.latest-dub.show');
 
 Route::get('/dubs', [DubController::class, 'index'])->name('api.dubs.index');
+
+Route::prefix('/videos/{video}')
+    ->where(['video' => VideoId::PATTERN])
+    ->group(function (): void {
+        Route::get('/engagement', [VideoEngagementController::class, 'show'])
+            ->name('api.videos.engagement.show');
+
+        Route::middleware('auth:sanctum')->group(function (): void {
+            Route::post('/likes', [VideoEngagementController::class, 'like'])
+                ->name('api.videos.likes.store');
+            Route::delete('/likes', [VideoEngagementController::class, 'unlike'])
+                ->name('api.videos.likes.destroy');
+            Route::post('/comments', [VideoEngagementController::class, 'storeComment'])
+                ->name('api.videos.comments.store');
+        });
+    });
 
 Route::middleware('throttle:auth')->group(function (): void {
     Route::post('/register', [RegisterController::class, 'store'])->name('api.register');
@@ -38,4 +57,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'notice'])
         ->middleware('throttle:6,1')
         ->name('api.verification.send');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+        ->name('api.comments.destroy');
 });

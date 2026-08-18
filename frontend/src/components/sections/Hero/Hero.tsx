@@ -26,8 +26,8 @@ export default function Hero({ isLoading, latestDub }: Props) {
                 </p>
 
                 <div className="hero__actions">
-                    <a href="#platforms" className="hero__button hero__button--primary">
-                        К площадкам
+                    <a href="#videos" className="hero__button hero__button--primary">
+                        К видео
                     </a>
 
                     <a href="#about" className="hero__button hero__button--secondary">
