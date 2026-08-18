@@ -33,7 +33,7 @@ export default function Header({
                             D
                         </span>
 
-                        <span>
+                        <span className="header__brand">
                             <strong>DOLGIY.FUN</strong>
                             <small>voice cinema</small>
                         </span>
