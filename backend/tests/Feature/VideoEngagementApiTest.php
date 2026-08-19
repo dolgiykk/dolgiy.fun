@@ -38,7 +38,8 @@ class VideoEngagementApiTest extends TestCase
             ->assertJsonPath('data.comments_count', 1)
             ->assertJsonPath('data.has_more', false)
             ->assertJsonPath('data.comments.0.body', 'Огонь озвучка')
-            ->assertJsonPath('data.comments.0.user.username', 'dolgiy_fan');
+            ->assertJsonPath('data.comments.0.user.username', 'dolgiy_fan')
+            ->assertJsonPath('data.comments.0.user.display_name', null);
     }
 
     public function test_invalid_video_id_returns_not_found(): void

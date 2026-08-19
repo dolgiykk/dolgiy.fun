@@ -5,6 +5,7 @@ export type VideoComment = {
     user: {
         id: number;
         username: string | null;
+        display_name: string | null;
     };
 };
 

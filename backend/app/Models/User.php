@@ -16,10 +16,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
+ * @property string|null $username
+ * @property string|null $display_name
+ * @property string|null $email
  * @property UserRole $role
  * @property int|null $vk_id
  */
-#[Fillable(['username', 'email', 'password', 'role', 'avatar_url', 'email_verified_at', 'vk_id'])]
+#[Fillable(['username', 'display_name', 'email', 'password', 'role', 'avatar_url', 'email_verified_at', 'vk_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -33,7 +36,20 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function needsUsername(): bool
     {
-        return blank($this->username);
+        return blank($this->username) && blank($this->display_name);
+    }
+
+    public function publicName(): string
+    {
+        if (filled($this->username)) {
+            return '@'.$this->username;
+        }
+
+        if (filled($this->display_name)) {
+            return (string) $this->display_name;
+        }
+
+        return 'пользователь';
     }
 
     /**
@@ -52,8 +68,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Like::class);
     }
 
+    public function hasVerifiedEmail(): bool
+    {
+        return blank($this->email) || $this->email_verified_at !== null;
+    }
+
     public function sendEmailVerificationNotification(): void
     {
+        if (blank($this->email)) {
+            return;
+        }
+
         $this->notify(new VerifyEmailNotification);
     }
 

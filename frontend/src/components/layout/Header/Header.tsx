@@ -2,6 +2,7 @@ import './Header.css';
 
 import { Link } from 'react-router-dom';
 
+import { publicName } from '../../../auth/publicName';
 import type { AuthUser } from '../../../types/auth';
 import type { Platform } from '../../../types/platform';
 import SocialLinks from '../../ui/SocialLinks/SocialLinks';
@@ -56,7 +57,7 @@ export default function Header({
                             (user ? (
                                 <>
                                     <Link to="/account" className="header__user">
-                                        @{user.username || 'профиль'}
+                                        {publicName(user)}
                                     </Link>
                                     <button
                                         type="button"

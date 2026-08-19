@@ -1,7 +1,8 @@
 export type AuthUser = {
     id: number;
     username: string | null;
-    email: string;
+    display_name: string | null;
+    email: string | null;
     role: 'user' | 'admin';
     avatar_url: string | null;
     email_verified_at: string | null;
