@@ -45,6 +45,30 @@ class VkAuthApiTest extends TestCase
         ]);
     }
 
+    public function test_vk_login_accepts_long_avatar_url(): void
+    {
+        $avatar = 'https://sun9-80.userapi.com/impg/'.str_repeat('a', 300).'/photo.jpg?size=400x400&quality=96&sign='.str_repeat('b', 80);
+
+        Http::fake([
+            'id.vk.ru/oauth2/user_info' => Http::response([
+                'user' => [
+                    'user_id' => 100501,
+                    'first_name' => 'Фан',
+                    'last_name' => 'К',
+                    'avatar' => $avatar,
+                ],
+            ]),
+        ]);
+
+        $this->postJson('/api/auth/vk', [
+            'access_token' => str_repeat('f', 32),
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.avatar_url', $avatar);
+
+        $this->assertTrue(strlen($avatar) > 255);
+    }
+
     public function test_vk_login_reuses_existing_vk_user(): void
     {
         $user = User::factory()->create([
