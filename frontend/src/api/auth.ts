@@ -169,6 +169,24 @@ export async function updateProfile(input: { username?: string }): Promise<AuthU
     return payload.data;
 }
 
+export async function uploadAvatar(file: File): Promise<AuthUser> {
+    await ensureCsrfCookie();
+    const body = new FormData();
+    body.append('avatar', file);
+
+    const response = await apiFetch('/user/avatar', {
+        method: 'POST',
+        body,
+    });
+
+    if (!response.ok) {
+        await parseError(response);
+    }
+
+    const payload = (await response.json()) as UserResponse;
+    return payload.data;
+}
+
 export async function resendEmailVerification(): Promise<string> {
     await ensureCsrfCookie();
     const response = await apiFetch('/email/verification-notification', {

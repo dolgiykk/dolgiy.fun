@@ -19,10 +19,13 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $username
  * @property string|null $display_name
  * @property string|null $email
+ * @property string|null $avatar_url
+ * @property string|null $avatar_disk
+ * @property string|null $avatar_path
  * @property UserRole $role
  * @property int|null $vk_id
  */
-#[Fillable(['username', 'display_name', 'email', 'password', 'role', 'avatar_url', 'email_verified_at', 'vk_id'])]
+#[Fillable(['username', 'display_name', 'email', 'password', 'role', 'avatar_url', 'avatar_disk', 'avatar_path', 'email_verified_at', 'vk_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -50,6 +53,23 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return 'пользователь';
+    }
+
+    public function avatarUrl(): ?string
+    {
+        if (filled($this->avatar_path)) {
+            return route('api.users.avatar.show', [
+                'user' => $this,
+                'v' => $this->updated_at?->format('Uu'),
+            ]);
+        }
+
+        return $this->avatar_url;
+    }
+
+    public function canUploadAvatar(): bool
+    {
+        return blank($this->vk_id) || filled($this->username);
     }
 
     /**

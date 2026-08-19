@@ -24,6 +24,7 @@ vi.mock('./api/auth', () => ({
     loginWithVk: vi.fn(),
     logoutUser: vi.fn(),
     registerUser: vi.fn(),
+    uploadAvatar: vi.fn(),
     updateProfile: vi.fn(),
     forgotPassword: vi.fn(),
     resetPassword: vi.fn(),
