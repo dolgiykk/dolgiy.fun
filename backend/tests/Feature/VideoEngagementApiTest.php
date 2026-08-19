@@ -39,7 +39,8 @@ class VideoEngagementApiTest extends TestCase
             ->assertJsonPath('data.has_more', false)
             ->assertJsonPath('data.comments.0.body', 'Огонь озвучка')
             ->assertJsonPath('data.comments.0.user.username', 'dolgiy_fan')
-            ->assertJsonPath('data.comments.0.user.display_name', null);
+            ->assertJsonPath('data.comments.0.user.display_name', null)
+            ->assertJsonPath('data.comments.0.user.avatar_url', null);
     }
 
     public function test_invalid_video_id_returns_not_found(): void
@@ -96,7 +97,8 @@ class VideoEngagementApiTest extends TestCase
             ])
             ->assertCreated()
             ->assertJsonPath('data.body', 'Первый')
-            ->assertJsonPath('data.user.username', 'commenter');
+            ->assertJsonPath('data.user.username', 'commenter')
+            ->assertJsonPath('data.user.avatar_url', null);
 
         $this->actingAs($user)
             ->postJson('/api/videos/'.self::VIDEO_ID.'/comments', [

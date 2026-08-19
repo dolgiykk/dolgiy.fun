@@ -72,6 +72,10 @@ function formatCommentsCount(count: number): string {
     return `${count} ${word}`;
 }
 
+function avatarFallback(user: { username: string | null; display_name: string | null }): string {
+    return publicName(user).replace('@', '').trim().charAt(0).toUpperCase() || 'U';
+}
+
 export default function VideoEngagement({ videoId, children }: Props) {
     const { user, isLoading: isAuthLoading } = useAuth();
     const [likesCount, setLikesCount] = useState(0);
@@ -337,13 +341,26 @@ export default function VideoEngagement({ videoId, children }: Props) {
 
                                 return (
                                     <li key={comment.id} className="video-engagement__item">
-                                        <div className="video-engagement__item-top">
-                                            <strong>{publicName(comment.user)}</strong>
-                                            {comment.created_at ? (
-                                                <time dateTime={comment.created_at}>
-                                                    {formatCommentDate(comment.created_at)}
-                                                </time>
-                                            ) : null}
+                                        <div className="video-engagement__item-header">
+                                            {comment.user.avatar_url ? (
+                                                <img
+                                                    className="video-engagement__avatar"
+                                                    src={comment.user.avatar_url}
+                                                    alt={publicName(comment.user)}
+                                                />
+                                            ) : (
+                                                <span className="video-engagement__avatar video-engagement__avatar--placeholder">
+                                                    {avatarFallback(comment.user)}
+                                                </span>
+                                            )}
+                                            <div className="video-engagement__item-top">
+                                                <strong>{publicName(comment.user)}</strong>
+                                                {comment.created_at ? (
+                                                    <time dateTime={comment.created_at}>
+                                                        {formatCommentDate(comment.created_at)}
+                                                    </time>
+                                                ) : null}
+                                            </div>
                                         </div>
                                         <p>{comment.body}</p>
                                         {canDelete ? (

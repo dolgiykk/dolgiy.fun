@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'role' => $this->role->value,
             'avatar_url' => $this->avatarUrl(),
             'can_upload_avatar' => $this->canUploadAvatar(),
+            'created_at' => $this->created_at?->toIso8601String(),
             'email_verified_at' => $this->email_verified_at,
             'needs_username' => $this->needsUsername(),
         ];
