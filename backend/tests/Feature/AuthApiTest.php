@@ -29,6 +29,7 @@ class AuthApiTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('data.username', 'dolgiy_fan')
+            ->assertJsonPath('data.display_name', null)
             ->assertJsonPath('data.email', 'fan@example.com')
             ->assertJsonPath('data.role', 'user')
             ->assertJsonMissingPath('data.name');

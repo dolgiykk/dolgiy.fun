@@ -83,9 +83,9 @@ class VideoEngagementController extends Controller
 
         if ($user->needsUsername()) {
             return response()->json([
-                'message' => 'Сначала укажите username.',
+                'message' => 'Сначала укажите имя в профиле.',
                 'errors' => [
-                    'username' => ['Сначала укажите username.'],
+                    'username' => ['Сначала укажите имя в профиле.'],
                 ],
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AuthApiError } from '../../api/auth';
+import { publicName } from '../../auth/publicName';
 import { useAuth } from '../../auth/useAuth';
 import Container from '../layout/Container/Container';
 
@@ -41,34 +42,40 @@ export default function AccountPage() {
     }
 
     const isVerified = Boolean(user.email_verified_at);
+    const showEmail = Boolean(user.email);
+    const canResendVerification = showEmail && Boolean(user.username) && !isVerified;
 
     return (
         <section className="auth-page">
             <Container>
                 <div className="auth-card">
                     <span className="section-kicker">Аккаунт</span>
-                    <h1>@{user.username}</h1>
+                    <h1>{publicName(user)}</h1>
                     {user.role === 'admin' ? <p>admin</p> : null}
 
-                    {showVerifiedBanner ? (
+                    {showVerifiedBanner && showEmail ? (
                         <p className="auth-card__success">Email подтверждён. Аккаунт активен.</p>
                     ) : null}
 
                     {resendError ? <p className="auth-card__error">{resendError}</p> : null}
                     {resendMessage ? <p className="auth-card__success">{resendMessage}</p> : null}
 
-                    <dl className="auth-card__meta">
-                        <div>
-                            <dt>Email</dt>
-                            <dd>{user.email}</dd>
-                        </div>
-                        <div>
-                            <dt>Статус email</dt>
-                            <dd>{isVerified ? 'подтверждён' : 'не подтверждён'}</dd>
-                        </div>
-                    </dl>
+                    {showEmail ? (
+                        <dl className="auth-card__meta">
+                            <div>
+                                <dt>Email</dt>
+                                <dd>{user.email}</dd>
+                            </div>
+                            {user.username ? (
+                                <div>
+                                    <dt>Статус email</dt>
+                                    <dd>{isVerified ? 'подтверждён' : 'не подтверждён'}</dd>
+                                </div>
+                            ) : null}
+                        </dl>
+                    ) : null}
 
-                    {!isVerified ? (
+                    {canResendVerification ? (
                         <button
                             type="button"
                             className="auth-card__submit"

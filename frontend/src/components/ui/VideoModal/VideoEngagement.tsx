@@ -12,6 +12,7 @@ import {
     likeVideo,
     unlikeVideo,
 } from '../../../api/engagement';
+import { publicName } from '../../../auth/publicName';
 import { useAuth } from '../../../auth/useAuth';
 import type { VideoComment } from '../../../types/engagement';
 
@@ -282,10 +283,10 @@ export default function VideoEngagement({ videoId, children }: Props) {
 
                     {user?.needs_username ? (
                         <div className="video-engagement__guest">
-                            <p>Чтобы оставить комментарий, укажите username в профиле.</p>
+                            <p>Чтобы оставить комментарий, укажите имя в профиле.</p>
                             <div className="video-engagement__guest-actions">
                                 <Link to="/complete-profile" className="video-engagement__cta">
-                                    Указать username
+                                    Указать имя
                                 </Link>
                             </div>
                         </div>
@@ -337,9 +338,7 @@ export default function VideoEngagement({ videoId, children }: Props) {
                                 return (
                                     <li key={comment.id} className="video-engagement__item">
                                         <div className="video-engagement__item-top">
-                                            <strong>
-                                                @{comment.user.username || 'пользователь'}
-                                            </strong>
+                                            <strong>{publicName(comment.user)}</strong>
                                             {comment.created_at ? (
                                                 <time dateTime={comment.created_at}>
                                                     {formatCommentDate(comment.created_at)}

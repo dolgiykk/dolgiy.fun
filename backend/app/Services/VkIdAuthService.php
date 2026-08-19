@@ -23,13 +23,18 @@ class VkIdAuthService
         if ($user !== null) {
             $user->fill([
                 'avatar_url' => $profile['avatar_url'] ?? $user->avatar_url,
+                'display_name' => filled($user->username)
+                    ? $user->display_name
+                    : $profile['display_name'],
             ]);
             $user->save();
 
             return $user;
         }
 
-        $user = User::query()->where('email', $email)->first();
+        if ($email !== null) {
+            $user = User::query()->where('email', $email)->first();
+        }
 
         if ($user !== null) {
             if ($user->vk_id !== null && $user->vk_id !== $vkId) {
@@ -41,7 +46,7 @@ class VkIdAuthService
             $user->fill([
                 'vk_id' => $vkId,
                 'avatar_url' => $profile['avatar_url'] ?? $user->avatar_url,
-                'email_verified_at' => $user->email_verified_at ?? now(),
+                'display_name' => $user->display_name ?? $profile['display_name'],
             ]);
             $user->save();
 
@@ -51,8 +56,9 @@ class VkIdAuthService
         return User::query()->create([
             'vk_id' => $vkId,
             'username' => null,
+            'display_name' => $profile['display_name'],
             'email' => $email,
-            'email_verified_at' => now(),
+            'email_verified_at' => null,
             'password' => Str::password(32),
             'role' => UserRole::User,
             'avatar_url' => $profile['avatar_url'],
@@ -60,7 +66,7 @@ class VkIdAuthService
     }
 
     /**
-     * @return array{vk_id: int, email: string, avatar_url: string|null}
+     * @return array{vk_id: int, email: string|null, display_name: string, avatar_url: string|null}
      */
     private function fetchProfile(string $accessToken): array
     {
@@ -103,8 +109,13 @@ class VkIdAuthService
         }
 
         $vkId = (int) data_get($payload, 'user.user_id');
-        $email = strtolower(trim((string) data_get($payload, 'user.email', '')));
+        $rawEmail = strtolower(trim((string) data_get($payload, 'user.email', '')));
+        $email = filter_var($rawEmail, FILTER_VALIDATE_EMAIL) ? $rawEmail : null;
         $avatar = data_get($payload, 'user.avatar');
+        $displayName = $this->displayName(
+            (string) data_get($payload, 'user.first_name', ''),
+            (string) data_get($payload, 'user.last_name', ''),
+        );
 
         if ($vkId < 1) {
             throw ValidationException::withMessages([
@@ -112,16 +123,24 @@ class VkIdAuthService
             ]);
         }
 
-        if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if ($displayName === '') {
             throw ValidationException::withMessages([
-                'access_token' => ['VK не передал email. Разрешите доступ к почте и попробуйте снова.'],
+                'access_token' => ['VK не передал имя профиля.'],
             ]);
         }
 
         return [
             'vk_id' => $vkId,
             'email' => $email,
+            'display_name' => $displayName,
             'avatar_url' => is_string($avatar) && $avatar !== '' ? $avatar : null,
         ];
+    }
+
+    private function displayName(string $firstName, string $lastName): string
+    {
+        $name = trim(preg_replace('/\s+/', ' ', $firstName.' '.$lastName) ?? '');
+
+        return Str::limit($name, 80, '');
     }
 }

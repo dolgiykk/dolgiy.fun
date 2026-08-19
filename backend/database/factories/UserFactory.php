@@ -24,6 +24,7 @@ class UserFactory extends Factory
 
         return [
             'username' => Str::limit($username !== '' ? $username : 'user'.fake()->unique()->numerify('####'), 30, ''),
+            'display_name' => null,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
@@ -51,6 +52,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'username' => null,
+            'display_name' => null,
         ]);
     }
 }
