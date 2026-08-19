@@ -17,8 +17,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property UserRole $role
+ * @property int|null $vk_id
  */
-#[Fillable(['username', 'email', 'password', 'role', 'avatar_url', 'email_verified_at'])]
+#[Fillable(['username', 'email', 'password', 'role', 'avatar_url', 'email_verified_at', 'vk_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -70,6 +71,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'vk_id' => 'integer',
         ];
     }
 }

@@ -35,6 +35,7 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="FRONTEND_URL" value="http://localhost:5173"/>
         <env name="SANCTUM_STATEFUL_DOMAINS" value="localhost,localhost:5173"/>
+        <env name="VK_APP_ID" value="54726663"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>

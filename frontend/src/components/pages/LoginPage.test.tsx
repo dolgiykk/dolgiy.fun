@@ -11,6 +11,7 @@ const login = vi.fn();
 vi.mock('../../auth/useAuth', () => ({
     useAuth: () => ({
         login,
+        loginWithVk: vi.fn(),
     }),
 }));
 

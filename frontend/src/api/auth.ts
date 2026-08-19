@@ -76,6 +76,21 @@ export async function registerUser(input: {
     return payload.data;
 }
 
+export async function loginWithVk(accessToken: string): Promise<AuthUser> {
+    await ensureCsrfCookie();
+    const response = await apiFetch('/auth/vk', {
+        method: 'POST',
+        body: JSON.stringify({ access_token: accessToken }),
+    });
+
+    if (!response.ok) {
+        await parseError(response);
+    }
+
+    const payload = (await response.json()) as UserResponse;
+    return payload.data;
+}
+
 export async function loginUser(input: {
     email: string;
     password: string;

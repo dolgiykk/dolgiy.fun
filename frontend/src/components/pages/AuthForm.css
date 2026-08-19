@@ -61,6 +61,8 @@
 .auth-card__links {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     gap: 0.75rem 1rem;
 }
 
@@ -71,6 +73,35 @@
 
 .auth-card__error {
     color: #ff8fab !important;
+}
+
+.auth-card__divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.15rem 0;
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.auth-card__divider::before,
+.auth-card__divider::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--color-border);
+}
+
+.auth-card__vk {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.auth-card__vk-widget {
+    min-height: 44px;
 }
 
 .auth-card__success {

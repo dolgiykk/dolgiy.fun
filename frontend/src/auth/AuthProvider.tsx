@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     fetchCurrentUser,
     loginUser,
+    loginWithVk,
     logoutUser,
     registerUser,
     resendEmailVerification,
@@ -50,6 +51,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             refresh,
             async login(input: { email: string; password: string; remember?: boolean }) {
                 const next = await loginUser(input);
+                setUser(next);
+                return next;
+            },
+            async loginWithVk(accessToken: string) {
+                const next = await loginWithVk(accessToken);
                 setUser(next);
                 return next;
             },
