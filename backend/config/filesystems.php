@@ -28,6 +28,8 @@ return [
     |
     */
 
+    'avatar' => env('AVATAR_DISK', env('FILESYSTEM_DISK', 'local')),
+
     'disks' => [
 
         'local' => [

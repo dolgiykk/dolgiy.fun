@@ -25,6 +25,10 @@ export default function Header({
     isAuthLoading,
     onLogout,
 }: Props) {
+    const avatarFallback = user
+        ? publicName(user).replace('@', '').trim().charAt(0).toUpperCase() || 'U'
+        : null;
+
     return (
         <header className="header">
             <Container>
@@ -57,7 +61,20 @@ export default function Header({
                             (user ? (
                                 <>
                                     <Link to="/account" className="header__user">
-                                        {publicName(user)}
+                                        {user.avatar_url ? (
+                                            <img
+                                                className="header__user-avatar"
+                                                src={user.avatar_url}
+                                                alt={publicName(user)}
+                                            />
+                                        ) : (
+                                            <span className="header__user-avatar header__user-avatar--placeholder">
+                                                {avatarFallback}
+                                            </span>
+                                        )}
+                                        <span className="header__user-name">
+                                            {publicName(user)}
+                                        </span>
                                     </Link>
                                     <button
                                         type="button"

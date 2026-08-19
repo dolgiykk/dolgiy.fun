@@ -16,6 +16,7 @@ export type AuthContextValue = {
     }) => Promise<AuthUser>;
     logout: () => Promise<void>;
     completeProfile: (input: { username: string }) => Promise<AuthUser>;
+    uploadAvatar: (file: File) => Promise<AuthUser>;
     resendVerification: () => Promise<string>;
 };
 

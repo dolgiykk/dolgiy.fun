@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\UserAvatarController;
 use App\Http\Controllers\Api\Auth\UserController;
 use App\Http\Controllers\Api\Auth\VkLoginController;
 use App\Http\Controllers\Api\CommentController;
@@ -52,9 +53,13 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
     ->middleware('throttle:6,1')
     ->name('api.verification.verify');
 
+Route::get('/users/{user}/avatar', [UserAvatarController::class, 'show'])
+    ->name('api.users.avatar.show');
+
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', [UserController::class, 'show'])->name('api.user.show');
     Route::patch('/user', [UserController::class, 'update'])->name('api.user.update');
+    Route::post('/user/avatar', [UserAvatarController::class, 'store'])->name('api.user.avatar.store');
     Route::post('/logout', [LoginController::class, 'destroy'])->name('api.logout');
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'notice'])
         ->middleware('throttle:6,1')

@@ -44,6 +44,7 @@ const loggedInUser: AuthUser = {
     email: 'fan@example.com',
     role: 'user',
     avatar_url: null,
+    can_upload_avatar: true,
     email_verified_at: '2026-08-18T00:00:00.000000Z',
     needs_username: false,
 };

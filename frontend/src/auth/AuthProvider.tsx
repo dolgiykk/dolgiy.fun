@@ -7,6 +7,7 @@ import {
     logoutUser,
     registerUser,
     resendEmailVerification,
+    uploadAvatar,
     updateProfile,
 } from '../api/auth';
 import type { AuthUser } from '../types/auth';
@@ -75,6 +76,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             },
             async completeProfile(input: { username: string }) {
                 const next = await updateProfile(input);
+                setUser(next);
+                return next;
+            },
+            async uploadAvatar(file: File) {
+                const next = await uploadAvatar(file);
                 setUser(next);
                 return next;
             },

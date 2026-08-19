@@ -7,9 +7,11 @@ use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmailNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use RuntimeException;
 use Tests\TestCase;
@@ -17,6 +19,16 @@ use Tests\TestCase;
 class AuthApiTest extends TestCase
 {
     use RefreshDatabase;
+
+    private function fakeAvatarFile(): UploadedFile
+    {
+        $png = base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WnSUs8AAAAASUVORK5CYII=',
+            true,
+        );
+
+        return UploadedFile::fake()->createWithContent('avatar.png', $png ?: '');
+    }
 
     public function test_user_can_register_and_fetch_profile(): void
     {
@@ -148,6 +160,56 @@ class AuthApiTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath('data.username', 'new_name');
+    }
+
+    public function test_email_user_can_upload_avatar(): void
+    {
+        Storage::fake('s3');
+        config(['filesystems.avatar' => 's3']);
+
+        $user = User::factory()->create([
+            'username' => 'avatar_fan',
+            'vk_id' => null,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->post('/api/user/avatar', [
+                'avatar' => $this->fakeAvatarFile(),
+            ], [
+                'Accept' => 'application/json',
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.can_upload_avatar', true);
+
+        $user = $user->fresh();
+        $this->assertSame('s3', $user?->avatar_disk);
+        $this->assertNotNull($user?->avatar_path);
+        $this->assertNull($user?->avatar_url);
+        Storage::disk('s3')->assertExists((string) $user?->avatar_path);
+
+        $this->get((string) $response->json('data.avatar_url'))
+            ->assertOk();
+    }
+
+    public function test_vk_only_user_cannot_upload_avatar(): void
+    {
+        Storage::fake('s3');
+        config(['filesystems.avatar' => 's3']);
+
+        $user = User::factory()->create([
+            'username' => null,
+            'display_name' => 'Фан К',
+            'vk_id' => 12345,
+        ]);
+
+        $this->actingAs($user)
+            ->post('/api/user/avatar', [
+                'avatar' => $this->fakeAvatarFile(),
+            ], [
+                'Accept' => 'application/json',
+            ])
+            ->assertUnprocessable();
     }
 
     public function test_password_reset_flow(): void
