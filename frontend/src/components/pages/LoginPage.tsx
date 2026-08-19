@@ -6,9 +6,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthApiError } from '../../api/auth';
 import { useAuth } from '../../auth/useAuth';
 import Container from '../layout/Container/Container';
+import VkIdOAuthList from './VkIdOAuthList';
 
 export default function LoginPage() {
-    const { login } = useAuth();
+    const { login, loginWithVk } = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,13 +31,23 @@ export default function LoginPage() {
         }
     }
 
+    async function onVkSuccess(accessToken: string) {
+        setError(null);
+        try {
+            const user = await loginWithVk(accessToken);
+            navigate(user.needs_username ? '/complete-profile' : '/account');
+        } catch (err) {
+            setError(err instanceof AuthApiError ? err.message : 'Не удалось войти через VK.');
+        }
+    }
+
     return (
         <section className="auth-page">
             <Container>
                 <form className="auth-card" onSubmit={onSubmit}>
                     <span className="section-kicker">Аккаунт</span>
                     <h1>Вход</h1>
-                    <p>Войдите по email и паролю.</p>
+                    <p>Войдите по email и паролю или через VK ID.</p>
 
                     {error ? <p className="auth-card__error">{error}</p> : null}
 
@@ -70,6 +81,10 @@ export default function LoginPage() {
                         <Link to="/forgot-password">Забыли пароль?</Link>
                         <Link to="/register">Регистрация</Link>
                     </p>
+
+                    <p className="auth-card__divider">или</p>
+
+                    <VkIdOAuthList onSuccess={onVkSuccess} />
                 </form>
             </Container>
         </section>

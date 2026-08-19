@@ -6,9 +6,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthApiError } from '../../api/auth';
 import { useAuth } from '../../auth/useAuth';
 import Container from '../layout/Container/Container';
+import VkIdOAuthList from './VkIdOAuthList';
 
 export default function RegisterPage() {
-    const { register } = useAuth();
+    const { register, loginWithVk } = useAuth();
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -39,6 +40,21 @@ export default function RegisterPage() {
             }
         } finally {
             setIsSubmitting(false);
+        }
+    }
+
+    async function onVkSuccess(accessToken: string) {
+        setError(null);
+        try {
+            const user = await loginWithVk(accessToken);
+            navigate(user.needs_username ? '/complete-profile' : '/account');
+        } catch (err) {
+            if (err instanceof AuthApiError) {
+                const first = Object.values(err.errors)[0]?.[0];
+                setError(first || err.message);
+            } else {
+                setError('Не удалось войти через VK.');
+            }
         }
     }
 
@@ -97,6 +113,10 @@ export default function RegisterPage() {
                     <button type="submit" className="auth-card__submit" disabled={isSubmitting}>
                         {isSubmitting ? 'Создаём…' : 'Создать аккаунт'}
                     </button>
+
+                    <p className="auth-card__divider">или</p>
+
+                    <VkIdOAuthList onSuccess={onVkSuccess} />
 
                     <p className="auth-card__links">
                         <Link to="/login">Уже есть аккаунт</Link>

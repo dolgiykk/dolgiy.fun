@@ -7,6 +7,7 @@ export type AuthContextValue = {
     isLoading: boolean;
     refresh: () => Promise<void>;
     login: (input: { email: string; password: string; remember?: boolean }) => Promise<AuthUser>;
+    loginWithVk: (accessToken: string) => Promise<AuthUser>;
     register: (input: {
         username: string;
         email: string;

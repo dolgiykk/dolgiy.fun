@@ -21,6 +21,7 @@ vi.mock('./api/dubs', () => ({
 vi.mock('./api/auth', () => ({
     fetchCurrentUser: vi.fn().mockResolvedValue(null),
     loginUser: vi.fn(),
+    loginWithVk: vi.fn(),
     logoutUser: vi.fn(),
     registerUser: vi.fn(),
     updateProfile: vi.fn(),

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\UserController;
+use App\Http\Controllers\Api\Auth\VkLoginController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DubController;
 use App\Http\Controllers\Api\LatestDubController;
@@ -42,6 +43,7 @@ Route::prefix('/videos/{video}')
 Route::middleware('throttle:auth')->group(function (): void {
     Route::post('/register', [RegisterController::class, 'store'])->name('api.register');
     Route::post('/login', [LoginController::class, 'store'])->name('api.login');
+    Route::post('/auth/vk', [VkLoginController::class, 'store'])->name('api.auth.vk');
     Route::post('/forgot-password', [PasswordResetController::class, 'store'])->name('api.password.forgot');
     Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('api.password.reset');
 });
