@@ -45,6 +45,7 @@ const loggedInUser: AuthUser = {
     role: 'user',
     avatar_url: null,
     can_upload_avatar: true,
+    created_at: '2026-08-18T00:00:00.000000Z',
     email_verified_at: '2026-08-18T00:00:00.000000Z',
     needs_username: false,
 };
@@ -125,7 +126,7 @@ describe('VideoModal', () => {
             id: 15,
             body: 'Класс',
             created_at: '2026-08-18T10:00:00.000000Z',
-            user: { id: 7, username: 'fan', display_name: null },
+            user: { id: 7, username: 'fan', display_name: null, avatar_url: null },
         });
 
         const user = userEvent.setup();
@@ -158,7 +159,7 @@ describe('VideoModal', () => {
                         id: 2,
                         body: 'Новый',
                         created_at: '2026-08-18T11:00:00.000000Z',
-                        user: { id: 7, username: 'fan', display_name: null },
+                        user: { id: 7, username: 'fan', display_name: null, avatar_url: null },
                     },
                 ],
             })
@@ -172,7 +173,7 @@ describe('VideoModal', () => {
                         id: 1,
                         body: 'Старый',
                         created_at: '2026-08-18T10:00:00.000000Z',
-                        user: { id: 3, username: 'old', display_name: null },
+                        user: { id: 3, username: 'old', display_name: null, avatar_url: null },
                     },
                 ],
             });

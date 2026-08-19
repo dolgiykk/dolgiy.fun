@@ -48,6 +48,13 @@ export default function AccountPage() {
     const showEmail = Boolean(user.email);
     const canResendVerification = showEmail && Boolean(user.username) && !isVerified;
     const avatarFallback = publicName(user).replace('@', '').trim().charAt(0).toUpperCase() || 'U';
+    const registeredAt = user.created_at
+        ? new Intl.DateTimeFormat('ru-RU', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+          }).format(new Date(user.created_at))
+        : null;
 
     return (
         <section className="auth-page">
@@ -81,16 +88,24 @@ export default function AccountPage() {
                     {avatarError ? <p className="auth-card__error">{avatarError}</p> : null}
                     {avatarMessage ? <p className="auth-card__success">{avatarMessage}</p> : null}
 
-                    {showEmail ? (
+                    {showEmail || registeredAt ? (
                         <dl className="auth-card__meta">
-                            <div>
-                                <dt>Email</dt>
-                                <dd>{user.email}</dd>
-                            </div>
-                            {user.username ? (
+                            {showEmail ? (
+                                <div>
+                                    <dt>Email</dt>
+                                    <dd>{user.email}</dd>
+                                </div>
+                            ) : null}
+                            {showEmail && user.username ? (
                                 <div>
                                     <dt>Статус email</dt>
                                     <dd>{isVerified ? 'подтверждён' : 'не подтверждён'}</dd>
+                                </div>
+                            ) : null}
+                            {registeredAt ? (
+                                <div>
+                                    <dt>Дата регистрации</dt>
+                                    <dd>{registeredAt}</dd>
                                 </div>
                             ) : null}
                         </dl>
