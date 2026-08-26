@@ -394,8 +394,7 @@ export default function VideoEngagement({ videoId, children }: Props) {
                             {comments.map((comment) => {
                                 const isOwn = user !== null && user.id === comment.user.id;
                                 const canEdit = isOwn;
-                                const canDelete =
-                                    user !== null && (isOwn || user.role === 'admin');
+                                const canDelete = user !== null && (isOwn || user.role === 'admin');
                                 const isEditing = editingId === comment.id;
                                 const wasEdited =
                                     comment.updated_at !== null &&
@@ -452,9 +451,7 @@ export default function VideoEngagement({ videoId, children }: Props) {
                                                         className="video-engagement__action"
                                                         disabled={isSavingEdit}
                                                     >
-                                                        {isSavingEdit
-                                                            ? 'Сохраняем…'
-                                                            : 'Сохранить'}
+                                                        {isSavingEdit ? 'Сохраняем…' : 'Сохранить'}
                                                     </button>
                                                     <button
                                                         type="button"
