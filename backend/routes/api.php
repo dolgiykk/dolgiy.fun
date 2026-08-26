@@ -64,6 +64,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'notice'])
         ->middleware('throttle:6,1')
         ->name('api.verification.send');
+    Route::patch('/comments/{comment}', [CommentController::class, 'update'])
+        ->name('api.comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
         ->name('api.comments.destroy');
 });

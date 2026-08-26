@@ -11,6 +11,7 @@ import {
     fetchVideoEngagement,
     likeVideo,
     unlikeVideo,
+    updateComment,
 } from '../../../api/engagement';
 import { publicName } from '../../../auth/publicName';
 import { useAuth } from '../../../auth/useAuth';
@@ -91,6 +92,10 @@ export default function VideoEngagement({ videoId, children }: Props) {
     const [isLiking, setIsLiking] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
     const [promptAuth, setPromptAuth] = useState(false);
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editBody, setEditBody] = useState('');
+    const [editError, setEditError] = useState<string | null>(null);
+    const [isSavingEdit, setIsSavingEdit] = useState(false);
 
     const commentFieldId = useId();
     const canComment = Boolean(user && !user.needs_username);
@@ -217,11 +222,63 @@ export default function VideoEngagement({ videoId, children }: Props) {
         setComments((current) => current.filter((comment) => comment.id !== commentId));
         setCommentsCount((current) => Math.max(0, current - 1));
 
+        if (editingId === commentId) {
+            setEditingId(null);
+            setEditBody('');
+            setEditError(null);
+        }
+
         try {
             await deleteComment(commentId);
         } catch {
             setComments(previous);
             setCommentsCount(previousCount);
+        }
+    }
+
+    function onStartEdit(comment: VideoComment) {
+        setEditingId(comment.id);
+        setEditBody(comment.body);
+        setEditError(null);
+    }
+
+    function onCancelEdit() {
+        setEditingId(null);
+        setEditBody('');
+        setEditError(null);
+    }
+
+    async function onSaveEdit(event: FormEvent) {
+        event.preventDefault();
+
+        if (editingId === null || isSavingEdit) {
+            return;
+        }
+
+        const nextBody = editBody.trim();
+        if (nextBody === '') {
+            setEditError('Напишите комментарий.');
+            return;
+        }
+
+        setIsSavingEdit(true);
+        setEditError(null);
+
+        try {
+            const updated = await updateComment(editingId, nextBody);
+            setComments((current) =>
+                current.map((comment) => (comment.id === updated.id ? updated : comment)),
+            );
+            setEditingId(null);
+            setEditBody('');
+        } catch (error) {
+            setEditError(
+                error instanceof EngagementApiError
+                    ? error.message
+                    : 'Не удалось сохранить комментарий',
+            );
+        } finally {
+            setIsSavingEdit(false);
         }
     }
 
@@ -335,9 +392,15 @@ export default function VideoEngagement({ videoId, children }: Props) {
                     {comments.length > 0 ? (
                         <ul className="video-engagement__list">
                             {comments.map((comment) => {
+                                const isOwn = user !== null && user.id === comment.user.id;
+                                const canEdit = isOwn;
                                 const canDelete =
-                                    user !== null &&
-                                    (user.id === comment.user.id || user.role === 'admin');
+                                    user !== null && (isOwn || user.role === 'admin');
+                                const isEditing = editingId === comment.id;
+                                const wasEdited =
+                                    comment.updated_at !== null &&
+                                    comment.created_at !== null &&
+                                    comment.updated_at !== comment.created_at;
 
                                 return (
                                     <li key={comment.id} className="video-engagement__item">
@@ -358,22 +421,82 @@ export default function VideoEngagement({ videoId, children }: Props) {
                                                 {comment.created_at ? (
                                                     <time dateTime={comment.created_at}>
                                                         {formatCommentDate(comment.created_at)}
+                                                        {wasEdited ? ' · изменён' : ''}
                                                     </time>
                                                 ) : null}
                                             </div>
                                         </div>
-                                        <p>{comment.body}</p>
-                                        {canDelete ? (
-                                            <button
-                                                type="button"
-                                                className="video-engagement__delete"
-                                                onClick={() => {
-                                                    void onDeleteComment(comment.id);
-                                                }}
+                                        {isEditing ? (
+                                            <form
+                                                className="video-engagement__edit-form"
+                                                onSubmit={onSaveEdit}
                                             >
-                                                Удалить
-                                            </button>
-                                        ) : null}
+                                                {editError ? (
+                                                    <p className="video-engagement__error">
+                                                        {editError}
+                                                    </p>
+                                                ) : null}
+                                                <textarea
+                                                    value={editBody}
+                                                    maxLength={2000}
+                                                    rows={3}
+                                                    onChange={(event) =>
+                                                        setEditBody(event.target.value)
+                                                    }
+                                                    required
+                                                    aria-label="Редактировать комментарий"
+                                                />
+                                                <div className="video-engagement__actions">
+                                                    <button
+                                                        type="submit"
+                                                        className="video-engagement__action"
+                                                        disabled={isSavingEdit}
+                                                    >
+                                                        {isSavingEdit
+                                                            ? 'Сохраняем…'
+                                                            : 'Сохранить'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="video-engagement__action video-engagement__action--muted"
+                                                        onClick={onCancelEdit}
+                                                        disabled={isSavingEdit}
+                                                    >
+                                                        Отмена
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        ) : (
+                                            <>
+                                                <p>{comment.body}</p>
+                                                {canEdit || canDelete ? (
+                                                    <div className="video-engagement__actions">
+                                                        {canEdit ? (
+                                                            <button
+                                                                type="button"
+                                                                className="video-engagement__action"
+                                                                onClick={() => onStartEdit(comment)}
+                                                            >
+                                                                Редактировать
+                                                            </button>
+                                                        ) : null}
+                                                        {canDelete ? (
+                                                            <button
+                                                                type="button"
+                                                                className="video-engagement__action video-engagement__action--danger"
+                                                                onClick={() => {
+                                                                    void onDeleteComment(
+                                                                        comment.id,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                Удалить
+                                                            </button>
+                                                        ) : null}
+                                                    </div>
+                                                ) : null}
+                                            </>
+                                        )}
                                     </li>
                                 );
                             })}
