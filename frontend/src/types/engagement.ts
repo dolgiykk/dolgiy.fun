@@ -2,6 +2,7 @@ export type VideoComment = {
     id: number;
     body: string;
     created_at: string | null;
+    updated_at: string | null;
     user: {
         id: number;
         username: string | null;

@@ -20,6 +20,7 @@ vi.mock('../../../api/engagement', () => ({
     likeVideo: vi.fn(),
     unlikeVideo: vi.fn(),
     createComment: vi.fn(),
+    updateComment: vi.fn(),
     deleteComment: vi.fn(),
     EngagementApiError: class EngagementApiError extends Error {},
 }));

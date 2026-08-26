@@ -117,6 +117,21 @@ export async function createComment(videoId: string, body: string): Promise<Vide
     return payload.data;
 }
 
+export async function updateComment(commentId: number, body: string): Promise<VideoComment> {
+    await ensureCsrfCookie();
+    const response = await apiFetch(`/comments/${commentId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ body }),
+    });
+
+    if (!response.ok) {
+        await parseError(response);
+    }
+
+    const payload = (await response.json()) as CommentResponse;
+    return payload.data;
+}
+
 export async function deleteComment(commentId: number): Promise<void> {
     await ensureCsrfCookie();
     const response = await apiFetch(`/comments/${commentId}`, { method: 'DELETE' });

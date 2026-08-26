@@ -189,6 +189,74 @@
     color: #fca5a5;
 }
 
+.video-engagement__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.video-engagement__action {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #c4b5fd;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.video-engagement__action:hover,
+.video-engagement__action:focus-visible {
+    color: #ddd6fe;
+}
+
+.video-engagement__action--danger {
+    color: #f87171;
+}
+
+.video-engagement__action--danger:hover,
+.video-engagement__action--danger:focus-visible {
+    color: #fca5a5;
+}
+
+.video-engagement__action--muted {
+    color: var(--color-muted);
+}
+
+.video-engagement__action--muted:hover,
+.video-engagement__action--muted:focus-visible {
+    color: var(--color-text);
+}
+
+.video-engagement__action:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.video-engagement__edit-form {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.video-engagement__edit-form textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 4.5rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 0.65rem;
+    background: rgb(15 23 42 / 55%);
+    color: var(--color-text);
+    font: inherit;
+}
+
+.video-engagement__edit-form textarea:focus,
+.video-engagement__edit-form textarea:focus-visible {
+    outline: 2px solid rgb(196 181 253 / 55%);
+    outline-offset: 1px;
+}
+
 .video-engagement__more {
     align-self: start;
     padding: 0;

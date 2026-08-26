@@ -28,14 +28,16 @@ vi.mock('../../../api/engagement', () => ({
     likeVideo: vi.fn(),
     unlikeVideo: vi.fn(),
     createComment: vi.fn(),
+    updateComment: vi.fn(),
     deleteComment: vi.fn(),
     EngagementApiError: class EngagementApiError extends Error {},
 }));
 
-import { createComment, fetchVideoEngagement } from '../../../api/engagement';
+import { createComment, fetchVideoEngagement, updateComment } from '../../../api/engagement';
 
 const fetchVideoEngagementMock = vi.mocked(fetchVideoEngagement);
 const createCommentMock = vi.mocked(createComment);
+const updateCommentMock = vi.mocked(updateComment);
 
 const loggedInUser: AuthUser = {
     id: 7,
@@ -159,6 +161,7 @@ describe('VideoModal', () => {
                         id: 2,
                         body: 'Новый',
                         created_at: '2026-08-18T11:00:00.000000Z',
+                        updated_at: '2026-08-18T11:00:00.000000Z',
                         user: { id: 7, username: 'fan', display_name: null, avatar_url: null },
                     },
                 ],
@@ -173,6 +176,7 @@ describe('VideoModal', () => {
                         id: 1,
                         body: 'Старый',
                         created_at: '2026-08-18T10:00:00.000000Z',
+                        updated_at: '2026-08-18T10:00:00.000000Z',
                         user: { id: 3, username: 'old', display_name: null, avatar_url: null },
                     },
                 ],
@@ -189,5 +193,48 @@ describe('VideoModal', () => {
         expect(screen.getByRole('heading', { name: 'Комментарии' })).toBeInTheDocument();
         expect(fetchVideoEngagementMock).toHaveBeenLastCalledWith('video-id', { before: 2 });
         expect(screen.queryByRole('button', { name: 'Ещё комментарии' })).not.toBeInTheDocument();
+    });
+
+    it('lets the author edit their own comment', async () => {
+        fetchVideoEngagementMock.mockResolvedValue({
+            likes_count: 0,
+            liked: false,
+            comments_count: 1,
+            has_more: false,
+            comments: [
+                {
+                    id: 11,
+                    body: 'Было',
+                    created_at: '2026-08-18T11:00:00.000000Z',
+                    updated_at: '2026-08-18T11:00:00.000000Z',
+                    user: { id: 7, username: 'fan', display_name: null, avatar_url: null },
+                },
+            ],
+        });
+        updateCommentMock.mockResolvedValue({
+            id: 11,
+            body: 'Стало',
+            created_at: '2026-08-18T11:00:00.000000Z',
+            updated_at: '2026-08-18T12:00:00.000000Z',
+            user: { id: 7, username: 'fan', display_name: null, avatar_url: null },
+        });
+
+        authState.user = loggedInUser;
+        const user = userEvent.setup();
+        renderModal();
+
+        expect(await screen.findByText('Было')).toBeInTheDocument();
+        await user.click(screen.getByRole('button', { name: 'Редактировать' }));
+
+        const field = screen.getByLabelText('Редактировать комментарий');
+        await user.clear(field);
+        await user.type(field, 'Стало');
+        await user.click(screen.getByRole('button', { name: 'Сохранить' }));
+
+        await waitFor(() => {
+            expect(updateCommentMock).toHaveBeenCalledWith(11, 'Стало');
+        });
+        expect(await screen.findByText('Стало')).toBeInTheDocument();
+        expect(screen.getByText(/изменён/)).toBeInTheDocument();
     });
 });

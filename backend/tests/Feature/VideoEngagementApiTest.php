@@ -163,6 +163,66 @@ class VideoEngagementApiTest extends TestCase
             ->assertUnprocessable();
     }
 
+    public function test_user_can_edit_own_comment_but_not_others(): void
+    {
+        $author = User::factory()->create();
+        $stranger = User::factory()->create();
+
+        $own = Comment::query()->create([
+            'user_id' => $author->id,
+            'video_id' => self::VIDEO_ID,
+            'body' => 'Мой',
+        ]);
+
+        $foreign = Comment::query()->create([
+            'user_id' => $stranger->id,
+            'video_id' => self::VIDEO_ID,
+            'body' => 'Чужой',
+        ]);
+
+        $this->actingAs($author)
+            ->patchJson('/api/comments/'.$foreign->id, [
+                'body' => 'Хак',
+            ])
+            ->assertForbidden();
+
+        $this->actingAs($author)
+            ->patchJson('/api/comments/'.$own->id, [
+                'body' => '  Обновил  ',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.body', 'Обновил')
+            ->assertJsonPath('data.id', $own->id);
+
+        $this->assertDatabaseHas('comments', [
+            'id' => $own->id,
+            'body' => 'Обновил',
+        ]);
+    }
+
+    public function test_admin_cannot_edit_others_comments(): void
+    {
+        $author = User::factory()->create();
+        $admin = User::factory()->admin()->create();
+
+        $comment = Comment::query()->create([
+            'user_id' => $author->id,
+            'video_id' => self::VIDEO_ID,
+            'body' => 'Чужой',
+        ]);
+
+        $this->actingAs($admin)
+            ->patchJson('/api/comments/'.$comment->id, [
+                'body' => 'Админ правит',
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('comments', [
+            'id' => $comment->id,
+            'body' => 'Чужой',
+        ]);
+    }
+
     public function test_user_can_delete_own_comment_but_not_others(): void
     {
         $author = User::factory()->create();
