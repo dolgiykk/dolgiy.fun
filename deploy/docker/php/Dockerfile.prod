@@ -17,7 +17,7 @@ RUN composer dump-autoload --optimize --classmap-authoritative --no-dev --no-scr
     && php -r "file_exists('bootstrap/cache') || mkdir('bootstrap/cache', 0775, true);"
 
 
-FROM php:8.4-fpm-alpine
+FROM php:8.4.27-fpm-alpine
 
 WORKDIR /var/www/html
 
